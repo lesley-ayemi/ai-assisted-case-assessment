@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+backend/dev.db
+backend/uploads/
+
+# Node
+node_modules/
+.next/
+frontend/next-env.d.ts
+
+# Env
+.env
+.env.local
+
+# Eval runs (commit a curated summary instead)
+evals/results/
+
+.DS_Store

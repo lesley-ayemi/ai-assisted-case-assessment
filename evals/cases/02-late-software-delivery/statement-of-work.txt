@@ -1,0 +1,10 @@
+STATEMENT OF WORK SOW-03 under Master Services Agreement dated 10 September 2024
+Between: Pennant Dental Group Ltd ("Client") and Codewell Studio Ltd ("Supplier")
+
+1. Deliverable: online booking system for six clinics, integrated with the Client's practice-management software.
+2. Go-live date: 1 March 2025.
+3. Fees: £62,000, payable in three milestones. Milestones 1 and 2 (£41,000) paid.
+4. Change control: any change to scope must be agreed in writing via a Change Request. Agreed Change Requests may adjust the go-live date.
+5. Delay: if the Supplier fails to meet the go-live date for reasons within its control, the Client may withhold Milestone 3.
+
+Signed: R. Banerjee (Pennant Dental Group) / T. Ashby (Codewell Studio), 12 October 2024

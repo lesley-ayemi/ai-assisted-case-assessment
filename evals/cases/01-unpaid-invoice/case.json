@@ -1,0 +1,13 @@
+{
+  "title": "Unpaid signage invoice",
+  "client_name": "Harbour Signs Ltd",
+  "counterparty": "Meridian Retail Ltd",
+  "breach_date": "2025-06-30",
+  "description": "We supplied and installed 40 illuminated shop signs for Meridian Retail across their Bristol and Bath stores in May 2025, under their signed purchase order. Invoice INV-104 for £48,000 was due on 30 June 2025 and remains unpaid despite two reminders. Meridian have not complained about the signs. We had to take out an overdraft to cover supplier costs.",
+  "documents": ["purchase-order.txt", "invoice.txt", "chaser-email.txt"],
+  "expected": {
+    "elements_supported": ["contract_formed", "terms_identified", "breach", "loss"],
+    "must_mention": ["INV-104", "48,000"],
+    "score_range": [55, 90]
+  }
+}

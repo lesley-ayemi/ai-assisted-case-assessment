@@ -1,0 +1,17 @@
+From: t.ashby@codewell.example
+Date: 20 February 2025
+Subject: Booking system — go-live
+
+Hi Ravi, we will not make 1 March. Integration testing with your practice-management system is failing. New target is 31 March.
+
+---
+From: r.banerjee@pennantdental.example
+Date: 3 April 2025
+
+Tom, we are now past both dates. Our clinics are still on the old system and paying for it monthly. Please confirm a firm date.
+
+---
+From: t.ashby@codewell.example
+Date: 7 May 2025
+
+Ravi, the additional reporting screens your team asked for in January extended the build. We will invoice those separately.

@@ -1,0 +1,16 @@
+From: accounts@harboursigns.example
+To: payables@meridianretail.example
+Date: 21 July 2025
+Subject: Overdue — INV-104
+
+Hello,
+
+Invoice INV-104 for £48,000 fell due on 30 June 2025 and remains unpaid. This is our second reminder. Please confirm when payment will be made.
+
+Harbour Signs accounts team
+
+---
+From: payables@meridianretail.example
+Date: 23 July 2025
+
+Thanks, we are reviewing our cash position and will revert.
