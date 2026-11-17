@@ -19,6 +19,7 @@ A portfolio demo of an AI workflow for **solicitors in England and Wales** handl
 | Human-in-the-loop review with audit trail | `POST /cases/{id}/assessments/{id}/review` |
 | PDF assessment report: review status, verification marks, sources and attribution | `backend/app/services/report.py` |
 | Evaluation suite: offline retrieval metrics plus full-pipeline checks | `evals/` |
+| Playwright end-to-end test: intake, upload, assessment, PDF download, review | `frontend/e2e/` |
 
 ## Architecture
 
@@ -80,7 +81,14 @@ Open http://localhost:3000.
 cd backend && .venv/bin/pytest                                  # no API key or database needed
 backend/.venv/bin/python evals/run_evals.py --retrieval-only    # offline retrieval eval, free
 backend/.venv/bin/python evals/run_evals.py                     # full pipeline; costs API credit
+cd frontend && npx playwright install chromium && npm run test:e2e   # browser end-to-end test
 ```
+
+### End-to-end test
+
+`frontend/e2e/case-workflow.spec.ts` drives the app in Chromium the way a solicitor would: create a case, upload the three documents from eval case 04, run the assessment, check that facts and statutory citations are marked verified and that Limitation Act s.5 is applied by rule, download the PDF report, approve it with amendments, and confirm the case list shows it as reviewed. Two smaller tests cover rejected uploads and legislation search.
+
+Playwright starts its own backend (fresh SQLite database, port 8010) and frontend (port 3010), so it doesn't touch your dev data. The backend runs with `LLM_PROVIDER=stub`, a deterministic keyword extractor that quotes lines of the documents verbatim, so the test needs no API key and gives the same result every run. The stub does no real analysis: it tests the workflow, and the evals test the model. Assessments it produces are recorded with the model `stub`.
 
 The full eval checks, per case: every quote is traceable to its source, every statutory citation is verified, the expected claim elements are found or correctly marked missing, key facts are mentioned, limitation flags fire, expected provisions are cited, and the readiness score falls in the hand-labelled range.
 
@@ -125,7 +133,7 @@ Caveats: 13 labels is a small sample, and the expansion table and retrieval desi
 - [ ] Run the full evals and publish results in this README
 - [ ] Hybrid retrieval (BM25 + embeddings) compared on the retrieval eval; more labelled cases
 - [x] PDF assessment report export
-- [ ] Playwright end-to-end test
+- [x] Playwright end-to-end test
 - [ ] Deploy (Render or Fly with managed Postgres) and record a 2-minute demo video
 
 ## Data and licensing

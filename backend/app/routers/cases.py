@@ -17,7 +17,7 @@ from app.schemas import (
     ReviewDecision,
     Verification,
 )
-from app.services import extraction
+from app.services import extraction, stub_extraction
 from app.services.documents import UnsupportedDocument, extract_text
 from app.services.legal_search import get_provision, search_case
 from app.services.readiness import LIMITATION_PROVISION_ID, score_readiness
@@ -93,8 +93,12 @@ def run_assessment(case_id: int, db: Session = Depends(get_db)):
     hits = search_case(case.description, [text for _, _, text in docs], k=PROVISIONS_PER_ASSESSMENT)
     provisions = [h.provision for h in hits]
 
+    stub = settings.llm_provider == "stub"
     try:
-        facts = extraction.extract_facts(case.description, docs, provisions)
+        if stub:
+            facts = stub_extraction.extract_facts(case.description, docs, provisions)
+        else:
+            facts = extraction.extract_facts(case.description, docs, provisions)
     except extraction.ExtractionRefused as e:
         raise HTTPException(422, str(e)) from e
 
@@ -120,7 +124,7 @@ def run_assessment(case_id: int, db: Session = Depends(get_db)):
         readiness=readiness.model_dump(mode="json"),
         sources=[s.model_dump(mode="json") for s in sources],
         verification=verification.model_dump(mode="json"),
-        model=settings.llm_model,
+        model=stub_extraction.STUB_MODEL if stub else settings.llm_model,
     )
     case.status = "awaiting_review"
     db.add(assessment)

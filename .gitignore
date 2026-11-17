@@ -6,6 +6,7 @@ __pycache__/
 .ruff_cache/
 *.egg-info/
 backend/dev.db
+backend/e2e.db
 backend/uploads/
 
 # Node

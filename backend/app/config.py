@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +13,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://caseiq:caseiq@localhost:5432/caseiq"
     upload_dir: str = "uploads"
 
+    # "stub" swaps the model for a deterministic keyword extractor (e2e tests, keyless demos).
+    llm_provider: Literal["anthropic", "stub"] = "anthropic"
     llm_model: str = "claude-opus-5-5"
     llm_effort: str = "high"
 
