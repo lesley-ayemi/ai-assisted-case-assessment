@@ -1,0 +1,29 @@
+{
+  "title": "SEO campaign with no results",
+  "client_name": "Hearth & Home Interiors Ltd",
+  "counterparty": "RankRise Digital Ltd",
+  "breach_date": null,
+  "description": "We paid RankRise £2,500 a month for 10 months for an SEO campaign. Our website traffic did not improve and some rankings fell. Their contract only says they will use best endeavours to improve rankings, with no specific targets. We want our money back.",
+  "documents": [
+    "seo-contract.txt",
+    "monthly-reports.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified"
+    ],
+    "flags_should_include": [
+      "unknown"
+    ],
+    "must_mention": [
+      "best endeavours"
+    ],
+    "score_range": [
+      20,
+      70
+    ]
+  },
+  "notes": "Breach is hard to establish against a best-endeavours obligation; breach should be weak or missing. No breach date given."
+}

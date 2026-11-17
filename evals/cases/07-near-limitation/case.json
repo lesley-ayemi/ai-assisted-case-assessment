@@ -1,0 +1,32 @@
+{
+  "title": "Unpaid scaffolding hire",
+  "client_name": "Apex Access Scaffolding Ltd",
+  "counterparty": "Broadmead Construction Ltd",
+  "breach_date": "2021-02-10",
+  "description": "We hired scaffolding to Broadmead for an office refurbishment in 2020. Our final invoice for £26,300 was due on 10 February 2021 and was never paid. We sent a letter before claim in 2021 but Broadmead went quiet and we put it on the back burner.",
+  "documents": [
+    "hire-agreement.txt",
+    "final-invoice.txt",
+    "letter-before-claim.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "pre_action"
+    ],
+    "flags_should_include": [
+      "expires on 2027-02-10"
+    ],
+    "must_mention": [
+      "26,300"
+    ],
+    "score_range": [
+      55,
+      95
+    ]
+  },
+  "notes": "Limitation expires 10 February 2027, under three months from as_of. The flag must warn about it."
+}

@@ -1,0 +1,15 @@
+From: k.patel@lindenkitchens.example
+To: orders@stoneway.example
+Date: 16 September 2025
+Subject: Rejection of defective worktops
+
+Under clause 5 we reject 604 worktops from the 12 September delivery as defective (inspection report attached). Please confirm replacement within 21 days.
+
+---
+From: orders@stoneway.example
+Date: 2 October 2025
+
+We believe the cracking was caused by your handling on site. We will not be replacing these units.
+
+---
+QUOTE Q-5518 from Ridgeline Stone Ltd, 9 October 2025: 604 quartz worktops, 30mm, Arctic White — £18,500 plus VAT.

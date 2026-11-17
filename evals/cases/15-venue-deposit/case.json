@@ -1,0 +1,29 @@
+{
+  "title": "Venue cancelled and kept deposit",
+  "client_name": "Lumen Conferences Ltd",
+  "counterparty": "Riverside Hall Venues Ltd",
+  "breach_date": "2026-04-20",
+  "description": "We booked Riverside Hall for a two-day conference in May 2026 and paid a £4,500 deposit. On 20 April 2026 they told us they had double-booked and cancelled our booking. They have not refunded the deposit. We sent a letter before claim and they have not replied.",
+  "documents": [
+    "booking-terms.txt",
+    "cancellation-and-lbc.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss",
+      "pre_action"
+    ],
+    "must_mention": [
+      "4,500"
+    ],
+    "score_range": [
+      65,
+      100
+    ]
+  },
+  "notes": "Clear breach, clear loss, pre-action letter present."
+}

@@ -1,0 +1,30 @@
+{
+  "title": "Old unpaid print invoice",
+  "client_name": "Inkwell Print Ltd",
+  "counterparty": "Sterling Events Ltd",
+  "breach_date": "2018-05-01",
+  "description": "We printed brochures and banners for Sterling Events' trade show in 2018. The invoice for £5,900 was due on 1 May 2018 and never paid. We found it during an accounts clean-up and want to recover it.",
+  "documents": [
+    "quote-acceptance.txt",
+    "invoice.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach"
+    ],
+    "flags_should_include": [
+      "expired"
+    ],
+    "must_mention": [
+      "5,900"
+    ],
+    "score_range": [
+      40,
+      90
+    ]
+  },
+  "notes": "Limitation clearly expired (2024). The flag must fire even though the evidence is otherwise decent."
+}

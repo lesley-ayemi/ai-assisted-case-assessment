@@ -1,0 +1,28 @@
+{
+  "title": "Software licence seats exceeded",
+  "client_name": "Tessellate Software Ltd",
+  "counterparty": "Marlow Logistics Ltd",
+  "breach_date": "2026-02-28",
+  "description": "Marlow licensed 50 seats of our route-planning software. Our audit in February 2026 found 112 active users. The licence says extra seats are charged at the list price of £30 per seat per month from when they were first used. Marlow refused to pay the true-up invoice due 28 February 2026.",
+  "documents": [
+    "licence-agreement.txt",
+    "audit-and-invoice.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach"
+    ],
+    "must_mention": [
+      "112",
+      "11,160"
+    ],
+    "score_range": [
+      50,
+      95
+    ]
+  },
+  "notes": "Licensor is the claimant. Tests extraction of the audit numbers and the true-up term."
+}

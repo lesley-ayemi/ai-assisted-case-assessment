@@ -1,0 +1,27 @@
+{
+  "title": "Unpaid extra joinery works",
+  "client_name": "Kestrel Joinery",
+  "counterparty": "Fenwick Properties Ltd",
+  "breach_date": "2026-01-15",
+  "description": "Fenwick's site manager asked us on site to build an extra oak staircase that was not in our original quote. He said it would be paid at our usual rates. We built it and invoiced £7,200, due 15 January 2026. Fenwick now say the extra work was never authorised. There is nothing in writing except some WhatsApp messages.",
+  "documents": [
+    "whatsapp.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "breach"
+    ],
+    "elements_missing": [
+      "pre_action"
+    ],
+    "must_mention": [
+      "7,200"
+    ],
+    "score_range": [
+      15,
+      60
+    ]
+  },
+  "notes": "No written contract for the extra work. Contract formation and terms should be weak at best."
+}

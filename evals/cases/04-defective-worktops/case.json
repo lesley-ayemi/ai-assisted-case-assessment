@@ -1,0 +1,30 @@
+{
+  "title": "Cracked quartz worktops",
+  "client_name": "Linden Kitchens Ltd",
+  "counterparty": "Stoneway Surfaces Ltd",
+  "breach_date": "2025-09-12",
+  "description": "We ordered 2,000 quartz worktops from Stoneway for a housing development. When they arrived on 12 September 2025 our inspection found about 600 were cracked. We rejected the cracked ones the same week. Stoneway will not replace them, so we have a quote of £18,500 from another supplier to make up the shortfall.",
+  "documents": [
+    "supply-agreement.txt",
+    "inspection-report.txt",
+    "rejection-and-quote.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss"
+    ],
+    "must_mention": [
+      "604",
+      "18,500"
+    ],
+    "score_range": [
+      60,
+      95
+    ]
+  },
+  "notes": "Strong evidence across contract, terms, breach and loss. Tests whether the inspection report is used as breach evidence."
+}

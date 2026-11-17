@@ -1,0 +1,30 @@
+{
+  "title": "Groundworks subcontractor abandoned site",
+  "client_name": "Oakfield Homes Ltd",
+  "counterparty": "Deepcut Groundworks Ltd",
+  "breach_date": "2025-07-07",
+  "description": "Deepcut were our groundworks subcontractor on a 12-house site. On 7 July 2025 they removed their plant and stopped attending, with the drainage half finished. We had to bring in another firm at short notice, which cost £31,000 more than Deepcut's remaining price.",
+  "documents": [
+    "subcontract.txt",
+    "site-diary.txt",
+    "replacement-costs.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss",
+      "causation"
+    ],
+    "must_mention": [
+      "31,000"
+    ],
+    "score_range": [
+      60,
+      100
+    ]
+  },
+  "notes": "Strong evidence including causation from the replacement contractor's costs."
+}

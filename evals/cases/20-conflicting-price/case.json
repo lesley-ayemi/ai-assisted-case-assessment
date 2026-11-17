@@ -1,0 +1,28 @@
+{
+  "title": "Dispute over the agreed price",
+  "client_name": "Vertex Signage Solutions Ltd",
+  "counterparty": "Coastal Leisure Group Ltd",
+  "breach_date": "2026-06-30",
+  "description": "We installed digital signage at Coastal Leisure's three hotels. We invoiced £15,000, which was our quoted price, due 30 June 2026. Coastal have paid only £13,500 and say that was the agreed price. We think the quote is what counts.",
+  "documents": [
+    "quote.txt",
+    "signed-contract.txt",
+    "invoice-and-payment.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified"
+    ],
+    "must_mention": [
+      "13,500",
+      "15,000"
+    ],
+    "score_range": [
+      25,
+      80
+    ]
+  },
+  "notes": "The signed contract contradicts the client's account. A good extraction surfaces both figures and flags the conflict as an open question."
+}

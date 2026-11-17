@@ -1,0 +1,6 @@
+GOODS-IN INSPECTION REPORT
+Delivery: Stoneway Surfaces, 12 September 2025
+Units received: 2,000
+Units inspected: 2,000
+Units failing inspection: 604 (hairline or through-cracks, mostly at cut-outs)
+Inspector: D. Hughes, Quality Lead, Linden Kitchens

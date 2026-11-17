@@ -1,0 +1,12 @@
+BANK TRANSFER RECORD: 2 May 2026, Grindhouse Cafés Ltd to Barista Supply Co Ltd, £12,000.00, reference SO-8812
+
+---
+From: ops@grindhouse.example
+To: sales@baristasupply.example
+Date: 3 June 2026
+Order SO-8812 was due by 30 May and has not arrived. Please confirm a delivery date.
+
+---
+From: ops@grindhouse.example
+Date: 17 June 2026
+Second request. We have had no reply to our 3 June email.

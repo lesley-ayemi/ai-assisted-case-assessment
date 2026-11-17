@@ -1,0 +1,32 @@
+{
+  "title": "Cleaning contract ended without notice",
+  "client_name": "BrightPath Cleaning Services Ltd",
+  "counterparty": "Kingsgate Offices Ltd",
+  "breach_date": "2025-11-01",
+  "description": "Kingsgate ended our three-year office cleaning contract with one week's email notice on 25 October 2025, effective 1 November 2025. The contract requires three months' notice. We lost three months of fees at £9,800 a month and had to keep staff on during that period because of their notice entitlements. Our solicitor-style letter before claim got a reply denying liability.",
+  "documents": [
+    "services-agreement.txt",
+    "termination-email.txt",
+    "loss-schedule.txt",
+    "pre-action-letters.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss",
+      "pre_action"
+    ],
+    "must_mention": [
+      "three months",
+      "28,050"
+    ],
+    "score_range": [
+      65,
+      100
+    ]
+  },
+  "notes": "The most complete case: all six elements should have evidence."
+}

@@ -34,7 +34,8 @@ def run_case(folder: Path) -> dict:
     facts = extract_facts(spec["description"], docs)
     elapsed = time.perf_counter() - started
     breach = date.fromisoformat(spec["breach_date"]) if spec.get("breach_date") else None
-    report = score_readiness(facts, breach)
+    as_of = date.fromisoformat(spec["as_of"])
+    report = score_readiness(facts, breach, today=as_of)
 
     status = {e.element.value: e.status for e in report.elements}
     all_text = " ".join(f.statement + " " + f.source.quote for f in facts.facts)

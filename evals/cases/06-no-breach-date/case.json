@@ -1,0 +1,31 @@
+{
+  "title": "Undelivered market research report",
+  "client_name": "Orchard Lane Foods Ltd",
+  "counterparty": "Brightside Insight Ltd",
+  "breach_date": null,
+  "description": "We paid Brightside to produce a market research report on the plant-based snack market. They kept saying it was nearly ready, and at some point last year we realised it was never going to arrive. We are not sure exactly when the deadline passed. We paid £11,000 up front.",
+  "documents": [
+    "engagement-letter.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified"
+    ],
+    "elements_missing": [
+      "pre_action"
+    ],
+    "flags_should_include": [
+      "unknown"
+    ],
+    "must_mention": [
+      "11,000"
+    ],
+    "score_range": [
+      20,
+      65
+    ]
+  },
+  "notes": "Breach date unknown, so the limitation flag must say it cannot be checked."
+}

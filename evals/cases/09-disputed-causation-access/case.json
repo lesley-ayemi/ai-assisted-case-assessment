@@ -1,0 +1,27 @@
+{
+  "title": "Delayed shopfit blamed on site access",
+  "client_name": "Northlight Retail Ltd",
+  "counterparty": "Precision Shopfitters Ltd",
+  "breach_date": "2025-08-04",
+  "description": "Precision were meant to finish fitting out our new Leeds store by 4 August 2025 so we could open for the back-to-school season. They finished on 29 August. We estimate we lost about £40,000 of sales. Precision say they could not start on time because our landlord's contractor was still on site and we did not give them site access.",
+  "documents": [
+    "fit-out-contract.txt",
+    "emails.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach"
+    ],
+    "must_mention": [
+      "site access"
+    ],
+    "score_range": [
+      35,
+      80
+    ]
+  },
+  "notes": "Causation is genuinely disputed. Open questions should ask about site access dates."
+}

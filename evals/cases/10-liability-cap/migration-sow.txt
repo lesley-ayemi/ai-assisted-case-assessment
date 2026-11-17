@@ -1,0 +1,6 @@
+STATEMENT OF WORK — CRM DATA MIGRATION
+Customer: Greystone Wealth Partners LLP. Supplier: Cloudharbour IT Ltd.
+Services: migrate all client records from LegacyCRM to NovaCRM, with validation that record counts and key fields match.
+Migration window: 17-18 May 2025.
+Fee: £5,000.
+Clause 9 (Limitation of liability): the Supplier's total liability arising under or in connection with this SOW shall not exceed the fees paid by the Customer.

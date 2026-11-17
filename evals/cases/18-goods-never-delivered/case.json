@@ -1,0 +1,29 @@
+{
+  "title": "Prepaid coffee machines never delivered",
+  "client_name": "Grindhouse Cafés Ltd",
+  "counterparty": "Barista Supply Co Ltd",
+  "breach_date": "2026-05-30",
+  "description": "We paid Barista Supply £12,000 in advance for four commercial coffee machines for new cafés, to be delivered by 30 May 2026. Nothing arrived. Our emails go unanswered and their phone line is disconnected. We are worried they may be insolvent.",
+  "documents": [
+    "order-confirmation.txt",
+    "payment-and-emails.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss"
+    ],
+    "must_mention": [
+      "12,000",
+      "SO-8812"
+    ],
+    "score_range": [
+      55,
+      95
+    ]
+  },
+  "notes": "Clear claim, but the open questions should raise the counterparty's solvency before any proceedings."
+}

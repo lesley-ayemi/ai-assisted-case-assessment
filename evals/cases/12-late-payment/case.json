@@ -1,0 +1,29 @@
+{
+  "title": "Unpaid freight invoice",
+  "client_name": "Meridian Freight Forwarding Ltd",
+  "counterparty": "Hollis Garden Products Ltd",
+  "breach_date": "2025-12-19",
+  "description": "We shipped two containers of garden furniture from Ningbo to Felixstowe for Hollis under our standard trading terms. Invoice INV-2231 for £14,860 was due on 19 December 2025. Hollis say they are waiting to be paid by their own customer.",
+  "documents": [
+    "credit-account.txt",
+    "invoice-and-reply.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss"
+    ],
+    "must_mention": [
+      "INV-2231",
+      "14,860"
+    ],
+    "score_range": [
+      55,
+      95
+    ]
+  },
+  "notes": "Straightforward debt claim with clear documents."
+}

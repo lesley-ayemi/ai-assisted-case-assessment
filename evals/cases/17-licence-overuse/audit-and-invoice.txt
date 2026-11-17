@@ -1,0 +1,9 @@
+TESSELLATE USAGE AUDIT — Marlow Logistics
+Audit date: 20 January 2026 (notice given 2 January 2026)
+Active named users: 112. Licensed seats: 50. Excess seats: 62.
+Excess first used: between April and July 2025; weighted average 6 months.
+
+TRUE-UP INVOICE TU-019, 29 January 2026: 62 seats x £30 x 6 months = £11,160. Due 28 February 2026.
+
+---
+From: it@marlowlogistics.example, 3 March 2026: Many of those accounts were test users. We do not accept the invoice.

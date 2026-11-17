@@ -1,0 +1,27 @@
+{
+  "title": "Distribution agreement terminated early",
+  "client_name": "Alba Spirits Distribution Ltd",
+  "counterparty": "Glen Corran Distillery Ltd",
+  "breach_date": "2025-10-15",
+  "description": "We were Glen Corran's exclusive UK distributor. The agreement needs six months' notice to terminate. On 1 October 2025 they gave us two weeks' notice and appointed a new distributor from 15 October. We think we have lost roughly six months of margin, but our accountant has not yet calculated it.",
+  "documents": [
+    "distribution-agreement.txt",
+    "notice-letter.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach"
+    ],
+    "must_mention": [
+      "six months"
+    ],
+    "score_range": [
+      40,
+      85
+    ]
+  },
+  "notes": "Breach is clear; loss is asserted but not quantified, so loss should be weak."
+}

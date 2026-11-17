@@ -4,12 +4,27 @@
   "counterparty": "Codewell Studio Ltd",
   "breach_date": "2025-03-01",
   "description": "We hired Codewell to build an online booking system for our six clinics. The statement of work said it would go live by 1 March 2025. It still was not working in May. We kept paying our old provider and lost bookings, though we have not worked out the figures. Codewell say we caused the delay by changing requirements.",
-  "documents": ["statement-of-work.txt", "status-emails.txt"],
+  "documents": [
+    "statement-of-work.txt",
+    "status-emails.txt"
+  ],
+  "as_of": "2026-11-17",
   "expected": {
-    "elements_supported": ["contract_formed", "terms_identified", "breach"],
-    "elements_missing": ["pre_action"],
-    "must_mention": ["1 March 2025"],
-    "open_questions_should_cover": ["quantify loss", "change requests"],
-    "score_range": [35, 75]
-  }
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach"
+    ],
+    "elements_missing": [
+      "pre_action"
+    ],
+    "must_mention": [
+      "1 March 2025"
+    ],
+    "score_range": [
+      35,
+      75
+    ]
+  },
+  "notes": "Open questions should ask the client to quantify loss and produce any change requests."
 }

@@ -1,0 +1,13 @@
+From: site@precisionshopfitters.example
+Date: 1 July 2025
+We attended site this morning. The landlord's electrical contractor is still working in the unit and we cannot start. Please confirm when we will have site access.
+
+---
+From: projects@northlight.example
+Date: 2 July 2025
+The landlord says their contractor will be out by Friday. Please start what you can.
+
+---
+From: site@precisionshopfitters.example
+Date: 14 July 2025
+We only gained full site access today. We will need an extension of time to the completion date.

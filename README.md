@@ -58,14 +58,31 @@ backend/.venv/bin/python evals/run_evals.py   # calls the model; costs API credi
 
 The eval checks, per case: every quote is traceable to its source, the expected claim elements are found or correctly marked missing, key facts are mentioned, limitation flags fire, and the readiness score falls in the hand-labelled range.
 
+### The eval set
+
+20 fictional England and Wales commercial contract disputes in `evals/cases/`, each with a `notes` field saying what it tests. Each case has a fixed `as_of` date so the limitation checks don't change from one run to the next.
+
+| Scenario | Cases |
+|---|---|
+| Strong evidence across most elements | 01, 04, 08, 12, 15, 16 |
+| Thin evidence: oral agreement, no documents | 05, 11 |
+| Loss asserted but not quantified | 02, 13 |
+| Disputed causation or breach | 09, 14 |
+| Limitation: expired, close to expiry, breach date unknown | 03, 19 · 07 · 06, 14 |
+| Terms that cut against the client: liability cap, contradicting contract | 10, 20 |
+| Claimant is the supplier or licensor | 01, 07, 12, 17, 19 |
+| Counterparty solvency risk | 18 |
+
+`pytest` validates every fixture (documents exist, labels are valid, key phrases appear in the source, and limitation labels match the rules) without calling the model.
+
 ## Roadmap
 
 - [x] Case intake, document upload, PDF and text extraction
 - [x] Structured fact extraction with source quotes
 - [x] Evidence-readiness score and limitation check
 - [x] Solicitor review with audit trail
-- [x] Eval harness with 3 fictional cases
-- [ ] Grow the eval set to 20–30 cases; publish results in this README
+- [x] Eval harness with 20 fictional cases
+- [ ] Run the evals and publish results in this README
 - [ ] Legal-source RAG over legislation.gov.uk (Open Government Licence) with citation checking
 - [ ] PDF assessment report export
 - [ ] Playwright end-to-end test

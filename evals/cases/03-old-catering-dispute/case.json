@@ -4,11 +4,25 @@
   "counterparty": "Ashgrove Catering",
   "breach_date": "2019-09-14",
   "description": "Ashgrove cancelled catering for a 150-guest wedding we organised two days before the event in September 2019. We had to hire an emergency caterer at a much higher price. We sent them a letter before claim at the time but then let it drop. We want to pursue it now.",
-  "documents": ["booking-confirmation.txt", "letter-before-claim.txt"],
+  "documents": [
+    "booking-confirmation.txt",
+    "letter-before-claim.txt"
+  ],
+  "as_of": "2026-11-17",
   "expected": {
-    "elements_supported": ["contract_formed", "breach"],
-    "flags_should_include": ["expired"],
-    "must_mention": ["150"],
-    "score_range": [40, 85]
+    "elements_supported": [
+      "contract_formed",
+      "breach"
+    ],
+    "flags_should_include": [
+      "expired"
+    ],
+    "must_mention": [
+      "150"
+    ],
+    "score_range": [
+      40,
+      85
+    ]
   }
 }

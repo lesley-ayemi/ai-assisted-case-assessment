@@ -1,0 +1,30 @@
+{
+  "title": "Data migration failure with liability cap",
+  "client_name": "Greystone Wealth Partners LLP",
+  "counterparty": "Cloudharbour IT Ltd",
+  "breach_date": "2025-05-17",
+  "description": "Cloudharbour migrated our client records to a new CRM over the weekend of 17 May 2025. About 3,000 records were corrupted. We spent around £60,000 on contractors to rebuild them from backups and paper files. Cloudharbour point to a clause limiting their liability to the fees we paid, which were £5,000.",
+  "documents": [
+    "migration-sow.txt",
+    "incident-report.txt",
+    "contractor-invoices.txt"
+  ],
+  "as_of": "2026-11-17",
+  "expected": {
+    "elements_supported": [
+      "contract_formed",
+      "terms_identified",
+      "breach",
+      "loss"
+    ],
+    "must_mention": [
+      "liability",
+      "3,112"
+    ],
+    "score_range": [
+      55,
+      100
+    ]
+  },
+  "notes": "Tests whether the liability cap is extracted as a term that a solicitor must address."
+}

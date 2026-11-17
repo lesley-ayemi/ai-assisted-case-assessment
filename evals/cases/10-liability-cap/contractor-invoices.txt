@@ -1,0 +1,4 @@
+Invoices from Ledgerfix Data Services to Greystone Wealth Partners:
+LF-101 (31 May 2025): data rebuild, £24,000
+LF-114 (30 June 2025): data rebuild and reconciliation, £36,200
+Total: £60,200

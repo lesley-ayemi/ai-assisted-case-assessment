@@ -1,0 +1,10 @@
+MERIDIAN FREIGHT — INVOICE INV-2231
+Date: 19 November 2025
+To: Hollis Garden Products Ltd
+Ocean freight Ningbo-Felixstowe, 2 x 40ft HC, customs clearance and haulage
+Total: £14,860.00. Due: 19 December 2025
+
+---
+From: p.grant@hollisgarden.example
+Date: 7 January 2026
+We acknowledge INV-2231 is outstanding. We will pay as soon as our customer settles with us.

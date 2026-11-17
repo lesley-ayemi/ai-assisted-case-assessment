@@ -1,0 +1,3 @@
+CLOUDHARBOUR INCIDENT REPORT IR-221
+Date: 20 May 2025
+Summary: during the 17 May migration a field-mapping script truncated address and notes fields. 3,112 client records affected. Validation step was skipped due to time pressure.
