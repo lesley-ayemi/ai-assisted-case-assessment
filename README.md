@@ -52,20 +52,32 @@ Rendering uses PyMuPDF's HTML-to-PDF Story API, so no extra dependency is needed
 
 ## Running locally
 
-**Backend**
+You need Python 3.11+ and Node 20+. Docker is optional.
+
+### 1. Backend
 
 ```bash
 cd backend
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
-cp .env.example .env   # add ANTHROPIC_API_KEY; use the SQLite line if you have no Postgres
+cp .env.example .env
+```
+
+Edit `backend/.env`:
+
+- **Database:** with no Postgres, comment out the Postgres `DATABASE_URL` and uncomment `DATABASE_URL=sqlite:///./dev.db`. To use Postgres, run `docker compose up -d db` and keep the default line.
+- **Extraction:** pick one.
+  - With an API key, set `ANTHROPIC_API_KEY`. Each assessment costs some API credit.
+  - Without one, uncomment `LLM_PROVIDER=stub`. A keyword matcher quotes lines of the documents instead of a model, and the case page shows a "Stub mode" notice. It's for trying the workflow, not real analysis.
+
+```bash
 .venv/bin/uvicorn app.main:app --reload
 ```
 
-Postgres (optional; SQLite works for local dev): `docker compose up -d db`
+To check it's running, open http://localhost:8000/health. API docs are at http://localhost:8000/docs.
 
 To refresh the legislation corpus: `.venv/bin/python scripts/ingest_legislation.py`
 
-**Frontend**
+### 2. Frontend (second terminal)
 
 ```bash
 cd frontend
@@ -75,6 +87,32 @@ npm install && npm run dev
 
 Open http://localhost:3000.
 
+### 3. Try it
+
+The 20 fictional cases in `evals/cases/` make ready-made test data: each folder has a `case.json` (title, parties, breach date, description) and the documents to upload.
+
+1. **Create a case:** click **New case** and copy the details from `evals/cases/04-defective-worktops/case.json`.
+2. **Upload documents:** upload the three `.txt` files from that folder, one at a time.
+3. **Run the assessment.** Check:
+   - the readiness score and the six claim elements
+   - the extracted facts, each with its source quote
+   - **Relevant legislation**, with each citation marked verified or not
+   - **Provisions considered**, where Limitation Act s.5 should say "applied by the limitation check"
+4. **Download PDF report:** it should show a "DRAFT: NOT YET REVIEWED" banner.
+5. **Review it:** add a note and click **Approve with amendments**. Download the PDF again and the banner should have changed.
+6. **Back on Cases:** the case should show as "reviewed".
+7. **Legislation page:** try the example searches, or describe a problem in plain words.
+
+Other cases worth trying:
+
+- `07-near-limitation` (breach 2021-02-10): a warning that the limitation period expires on 2027-02-10.
+- `11-description-only`: no documents, so most elements come out missing.
+
+**Troubleshooting**
+
+- **"Could not reach the API" on the case list:** the backend isn't running on port 8000, or `NEXT_PUBLIC_API_URL` in `frontend/.env.local` points somewhere else.
+- **Starting again:** stop the backend, delete `backend/dev.db`, and restart it.
+
 ## Tests and evals
 
 ```bash
@@ -83,6 +121,8 @@ backend/.venv/bin/python evals/run_evals.py --retrieval-only    # offline retrie
 backend/.venv/bin/python evals/run_evals.py                     # full pipeline; costs API credit
 cd frontend && npx playwright install chromium && npm run test:e2e   # browser end-to-end test
 ```
+
+Stop `npm run dev` before running the end-to-end test: it starts its own servers, and two Next.js dev servers in the same folder can clash.
 
 ### End-to-end test
 
