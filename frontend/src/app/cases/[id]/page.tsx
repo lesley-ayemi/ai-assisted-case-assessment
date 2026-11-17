@@ -107,6 +107,13 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
               Download PDF report
             </a>
           </div>
+          {latest.model === "stub" && (
+            <p className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+              <strong>Stub mode:</strong> no AI model was used. Facts are lines of the material
+              tagged by keyword, for testing the workflow. Set an Anthropic API key for real
+              analysis.
+            </p>
+          )}
           <div className="flex items-baseline justify-between">
             <h2 className="font-medium">Evidence readiness</h2>
             <span className="text-3xl font-semibold">{latest.readiness.score}/100</span>

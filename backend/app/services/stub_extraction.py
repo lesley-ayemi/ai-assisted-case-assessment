@@ -31,7 +31,8 @@ PATTERNS: list[tuple[Element, re.Pattern[str]]] = [
 
 
 def _lines(text: str) -> list[str]:
-    parts = re.split(r"\n+|(?<=[.!?])\s+", text)
+    # Split into lines and sentences, but not after an initial ("Signed: A. Marsh").
+    parts = re.split(r"\n+|(?<!\b[A-Z][.])(?<=[.!?])\s+", text)
     return [p.strip()[:MAX_QUOTE_CHARS] for p in parts if len(p.strip()) > 8]
 
 
