@@ -1,7 +1,7 @@
 """Database tables.
 
-The pgvector `Chunk` table for legal-source retrieval arrives in Phase 2; it is kept out
-of the core models so the test suite can run on SQLite.
+Statutory provisions are read from data/legislation/sections.json rather than the
+database, so the test suite runs on SQLite with no setup.
 """
 
 from datetime import UTC, date, datetime
@@ -59,6 +59,8 @@ class Assessment(Base):
     case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
     facts: Mapped[dict] = mapped_column(JSON)
     readiness: Mapped[dict] = mapped_column(JSON)
+    sources: Mapped[list] = mapped_column(JSON, default=list)
+    verification: Mapped[dict] = mapped_column(JSON, default=dict)
     model: Mapped[str] = mapped_column(String(64))
     review_status: Mapped[str] = mapped_column(String(16), default="pending")
     reviewer_note: Mapped[str] = mapped_column(Text, default="")

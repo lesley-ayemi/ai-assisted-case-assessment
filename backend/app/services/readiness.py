@@ -21,6 +21,8 @@ WEIGHTS: dict[Element, float] = {
 SUPPORTED_THRESHOLD = 2
 
 # Limitation Act 1980 s.5: six years from breach for simple contracts.
+LIMITATION_PROVISION_ID = "ukpga/1980/58/section/5"
+LIMITATION_CITATION = "Limitation Act 1980, s.5"
 LIMITATION_YEARS = 6
 LIMITATION_WARNING_MONTHS = 6
 
@@ -34,13 +36,21 @@ def _add_years(d: date, years: int) -> date:
 
 def limitation_flags(breach_date: date | None, today: date) -> list[str]:
     if breach_date is None:
-        return ["Breach date unknown: limitation period cannot be checked."]
+        return [f"Breach date unknown: limitation period cannot be checked ({LIMITATION_CITATION})."]
     expiry = _add_years(breach_date, LIMITATION_YEARS)
     if today >= expiry:
-        return [f"Limitation period appears to have expired on {expiry.isoformat()}."]
+        message = (
+            f"Limitation period appears to have expired on {expiry.isoformat()} "
+            f"({LIMITATION_CITATION}). Check for acknowledgment, part payment or concealment."
+        )
+        return [message]
     months_left = (expiry.year - today.year) * 12 + (expiry.month - today.month)
     if months_left <= LIMITATION_WARNING_MONTHS:
-        return [f"Limitation period expires on {expiry.isoformat()} (about {months_left} months)."]
+        message = (
+            f"Limitation period expires on {expiry.isoformat()} (about {months_left} months; "
+            f"{LIMITATION_CITATION})."
+        )
+        return [message]
     return []
 
 

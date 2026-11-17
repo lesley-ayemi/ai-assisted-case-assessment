@@ -24,6 +24,10 @@
     "score_range": [
       55,
       90
+    ],
+    "provisions": [
+      "ukpga/1998/20/section/1",
+      "ukpga/1979/54/section/49"
     ]
   }
 }

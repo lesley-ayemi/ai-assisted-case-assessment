@@ -67,9 +67,18 @@ class ExtractedFact(BaseModel):
     date: str | None = Field(default=None, description="ISO date if the fact has one")
 
 
+class LegalIssue(BaseModel):
+    issue: str = Field(description="How the provision may bear on this case, in one or two sentences")
+    provision_id: str = Field(description="The id attribute of a provided <provision>, verbatim")
+    quote: str = Field(description="Short verbatim quote from that provision's text")
+
+
 class ExtractedFacts(BaseModel):
     parties: list[str]
     facts: list[ExtractedFact]
+    legal_issues: list[LegalIssue] = Field(
+        description="Issues raised by the provided provisions only; empty if none are relevant"
+    )
     open_questions: list[str] = Field(
         description="Facts a solicitor would need to confirm that the documents do not answer"
     )
@@ -92,6 +101,36 @@ class ReadinessReport(BaseModel):
     missing: list[Element]
 
 
+# ---------- Legal sources ----------
+
+
+class ProvisionRef(BaseModel):
+    id: str
+    citation: str
+    title: str
+    url: str
+    via: Literal["search", "rule"] = Field(
+        description="'search' if retrieved for this case, 'rule' if applied by a fixed check"
+    )
+    score: float | None = None
+
+
+class ProvisionHit(BaseModel):
+    id: str
+    citation: str
+    title: str
+    url: str
+    score: float
+    text: str
+
+
+class Verification(BaseModel):
+    """Results of checking the model's output against its sources."""
+
+    unverified_quotes: list[str] = []
+    unverified_citations: list[str] = []
+
+
 # ---------- Review ----------
 
 
@@ -102,6 +141,8 @@ class AssessmentOut(BaseModel):
     case_id: int
     facts: ExtractedFacts
     readiness: ReadinessReport
+    sources: list[ProvisionRef]
+    verification: Verification
     model: str
     review_status: str
     reviewer_note: str

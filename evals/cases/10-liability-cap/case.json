@@ -24,6 +24,10 @@
     "score_range": [
       55,
       100
+    ],
+    "provisions": [
+      "ukpga/1977/50/section/3",
+      "ukpga/1977/50/section/11"
     ]
   },
   "notes": "Tests whether the liability cap is extracted as a term that a solicitor must address."

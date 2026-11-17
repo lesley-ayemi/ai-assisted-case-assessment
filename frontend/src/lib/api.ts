@@ -42,10 +42,37 @@ export type ExtractedFact = {
   date: string | null;
 };
 
+export type LegalIssue = { issue: string; provision_id: string; quote: string };
+
+export type ProvisionRef = {
+  id: string;
+  citation: string;
+  title: string;
+  url: string;
+  via: "search" | "rule";
+  score: number | null;
+};
+
+export type ProvisionHit = {
+  id: string;
+  citation: string;
+  title: string;
+  url: string;
+  score: number;
+  text: string;
+};
+
 export type Assessment = {
   id: number;
   case_id: number;
-  facts: { parties: string[]; facts: ExtractedFact[]; open_questions: string[] };
+  facts: {
+    parties: string[];
+    facts: ExtractedFact[];
+    legal_issues: LegalIssue[];
+    open_questions: string[];
+  };
+  sources: ProvisionRef[];
+  verification: { unverified_quotes: string[]; unverified_citations: string[] };
   readiness: {
     score: number;
     elements: {
@@ -91,6 +118,8 @@ export const api = {
   listAssessments: (caseId: number) => request<Assessment[]>(`/cases/${caseId}/assessments`),
   runAssessment: (caseId: number) =>
     request<Assessment>(`/cases/${caseId}/assessments`, { method: "POST" }),
+  searchLegislation: (q: string, k = 8) =>
+    request<ProvisionHit[]>(`/legislation/search?${new URLSearchParams({ q, k: String(k) })}`),
   review: (caseId: number, assessmentId: number, decision: string, note: string) =>
     request<Assessment>(
       `/cases/${caseId}/assessments/${assessmentId}/review`,

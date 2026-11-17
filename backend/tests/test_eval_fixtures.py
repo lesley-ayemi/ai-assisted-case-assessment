@@ -7,18 +7,24 @@ from pathlib import Path
 import pytest
 
 from app.schemas import Element
-from app.services.readiness import limitation_flags
+from app.services.legal_search import load_provisions, search_case
+from app.services.readiness import LIMITATION_PROVISION_ID, limitation_flags
 
 CASES_DIR = Path(__file__).resolve().parents[2] / "evals" / "cases"
 CASES = sorted(p for p in CASES_DIR.iterdir() if p.is_dir())
 ELEMENTS = {e.value for e in Element}
+PROVISION_IDS = {p.id for p in load_provisions()}
 KNOWN_EXPECTED_KEYS = {
     "elements_supported",
     "elements_missing",
     "must_mention",
     "flags_should_include",
+    "provisions",
     "score_range",
 }
+
+# Regression floor for the offline retrieval eval (measured 77% when this was set).
+MIN_RETRIEVAL_RECALL = 0.70
 
 
 def load(folder: Path) -> dict:
@@ -54,6 +60,25 @@ def test_fixture_is_well_formed(folder: Path):
 
     lo, hi = exp["score_range"]
     assert 0 <= lo < hi <= 100
+
+    for pid in exp.get("provisions", []):
+        assert pid in PROVISION_IDS, f"provision {pid} is not in the corpus"
+        assert pid != LIMITATION_PROVISION_ID, "limitation is applied by rule, not retrieval"
+
+
+def test_retrieval_recall_does_not_regress():
+    found = total = 0
+    for folder in CASES:
+        spec = load(folder)
+        expected = spec["expected"].get("provisions", [])
+        if not expected:
+            continue
+        texts = [(folder / d).read_text() for d in spec["documents"]]
+        ranked = {h.provision.id for h in search_case(spec["description"], texts, k=6)}
+        found += sum(pid in ranked for pid in expected)
+        total += len(expected)
+    assert total >= 10
+    assert found / total >= MIN_RETRIEVAL_RECALL, f"recall@6 fell to {found}/{total}"
 
 
 @pytest.mark.parametrize("folder", CASES, ids=lambda p: p.name)

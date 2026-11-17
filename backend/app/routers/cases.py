@@ -12,15 +12,19 @@ from app.schemas import (
     CaseCreate,
     CaseOut,
     DocumentOut,
+    ProvisionRef,
     ReviewDecision,
+    Verification,
 )
 from app.services import extraction
 from app.services.documents import UnsupportedDocument, extract_text
-from app.services.readiness import score_readiness
+from app.services.legal_search import get_provision, search_case
+from app.services.readiness import LIMITATION_PROVISION_ID, score_readiness
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
+PROVISIONS_PER_ASSESSMENT = 6
 
 
 def _get_case(db: Session, case_id: int) -> Case:
@@ -76,15 +80,36 @@ async def upload_document(case_id: int, file: UploadFile, db: Session = Depends(
 def run_assessment(case_id: int, db: Session = Depends(get_db)):
     case = _get_case(db, case_id)
     docs = [(d.id, d.filename, d.text) for d in case.documents]
+
+    hits = search_case(case.description, [text for _, _, text in docs], k=PROVISIONS_PER_ASSESSMENT)
+    provisions = [h.provision for h in hits]
+
     try:
-        facts = extraction.extract_facts(case.description, docs)
+        facts = extraction.extract_facts(case.description, docs, provisions)
     except extraction.ExtractionRefused as e:
         raise HTTPException(422, str(e)) from e
     readiness = score_readiness(facts, case.breach_date)
+
+    sources = [
+        ProvisionRef(id=h.provision.id, citation=h.provision.citation, title=h.provision.title,
+                     url=h.provision.url, via="search", score=h.score)
+        for h in hits
+    ]
+    limitation = get_provision(LIMITATION_PROVISION_ID)
+    if limitation and limitation.id not in {s.id for s in sources}:
+        sources.append(ProvisionRef(id=limitation.id, citation=limitation.citation,
+                                    title=limitation.title, url=limitation.url, via="rule"))
+    verification = Verification(
+        unverified_quotes=extraction.unverified_quotes(facts, case.description, docs),
+        unverified_citations=extraction.unverified_citations(facts, provisions),
+    )
+
     assessment = Assessment(
         case=case,
         facts=facts.model_dump(mode="json"),
         readiness=readiness.model_dump(mode="json"),
+        sources=[s.model_dump(mode="json") for s in sources],
+        verification=verification.model_dump(mode="json"),
         model=settings.llm_model,
     )
     case.status = "awaiting_review"

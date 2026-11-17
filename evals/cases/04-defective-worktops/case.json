@@ -24,6 +24,10 @@
     "score_range": [
       60,
       95
+    ],
+    "provisions": [
+      "ukpga/1979/54/section/14",
+      "ukpga/1979/54/section/35A"
     ]
   },
   "notes": "Strong evidence across contract, terms, breach and loss. Tests whether the inspection report is used as breach evidence."

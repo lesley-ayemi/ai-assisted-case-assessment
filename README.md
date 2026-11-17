@@ -2,7 +2,7 @@
 
 > Working name. Product naming is set in `backend/app/config.py` and `NEXT_PUBLIC_PRODUCT_NAME`.
 
-A portfolio demo of an AI workflow for **solicitors in England and Wales** handling **contract disputes**. A solicitor creates a case and uploads documents. The system extracts facts with verbatim source quotes, scores how completely the evidence covers each element of the claim, flags limitation risk, and queues the result for human review.
+A portfolio demo of an AI workflow for **solicitors in England and Wales** handling **contract disputes**. A solicitor creates a case and uploads documents. The system extracts facts with verbatim source quotes, retrieves relevant statutory provisions from legislation.gov.uk, scores how completely the evidence covers each element of the claim, flags limitation risk, and queues the result for human review.
 
 **It does not predict outcomes and does not give legal advice.** All data is fictional.
 
@@ -12,19 +12,33 @@ A portfolio demo of an AI workflow for **solicitors in England and Wales** handl
 |---|---|
 | Structured LLM output with Pydantic validation | `backend/app/services/extraction.py` |
 | Hallucination check: every quote must appear verbatim in its cited document | `unverified_quotes()` |
+| Legal RAG: BM25 retrieval over 57 statutory provisions, with lay-to-legal query expansion | `backend/app/services/legal_search.py` |
+| Citation check: every statutory citation must be a retrieved provision and quote it verbatim | `unverified_citations()` |
 | Explainable, deterministic evidence-readiness score (not a win probability) | `backend/app/services/readiness.py` |
 | Limitation Act 1980 s.5 check (six years for simple contracts) | `limitation_flags()` |
 | Human-in-the-loop review with audit trail | `POST /cases/{id}/assessments/{id}/review` |
-| Evaluation suite on hand-labelled fictional cases | `evals/` |
+| Evaluation suite: offline retrieval metrics plus full-pipeline checks | `evals/` |
 
 ## Architecture
 
 ```
-Next.js (TypeScript, Tailwind)  ──►  FastAPI  ──►  PostgreSQL (+ pgvector, Phase 2)
+Next.js (TypeScript, Tailwind)  ──►  FastAPI  ──►  PostgreSQL (SQLite for local dev)
                                         │
                                         ├─► PyMuPDF (PDF text extraction)
-                                        └─► Claude API (structured fact extraction)
+                                        ├─► BM25 retriever ◄── data/legislation/sections.json
+                                        │                        (legislation.gov.uk, OGL v3.0)
+                                        └─► Claude API (structured facts + cited legal issues)
 ```
+
+### How legal retrieval works
+
+1. `scripts/ingest_legislation.py` fetches 57 sections from seven Acts (Limitation Act 1980, Sale of Goods Act 1979, Supply of Goods and Services Act 1982, Late Payment of Commercial Debts (Interest) Act 1998, Unfair Contract Terms Act 1977, Misrepresentation Act 1967, Contracts (Rights of Third Parties) Act 1999) through the legislation.gov.uk XML API, and saves the parsed text to `backend/data/legislation/sections.json`.
+2. For each case, the top 6 provisions are retrieved with BM25. The client's description leads the search, and the uploaded documents are a secondary signal (weighted rank fusion), because document boilerplate drowns out the signal when everything goes into one query.
+3. Clients describe problems in everyday words ("cracked", "unpaid invoice") while statutes use legal terms ("satisfactory quality", "qualifying debt"). A small, readable expansion table bridges the gap.
+4. The model receives the provisions and may cite only those, by ID, with a verbatim quote. Every citation is checked against the statute text, and the UI marks each one verified or not.
+5. Limitation Act 1980 s.5 isn't retrieved: the rule-based limitation check applies it to every case and cites it.
+
+Retrieval sits behind a `Retriever` interface, so vector or hybrid search (for example pgvector with an embeddings model) can be added later and compared on the same eval.
 
 ## Running locally
 
@@ -37,7 +51,9 @@ cp .env.example .env   # add ANTHROPIC_API_KEY; use the SQLite line if you have 
 .venv/bin/uvicorn app.main:app --reload
 ```
 
-Postgres with pgvector (optional until Phase 2): `docker compose up -d db`
+Postgres (optional; SQLite works for local dev): `docker compose up -d db`
+
+To refresh the legislation corpus: `.venv/bin/python scripts/ingest_legislation.py`
 
 **Frontend**
 
@@ -52,11 +68,25 @@ Open http://localhost:3000.
 ## Tests and evals
 
 ```bash
-cd backend && .venv/bin/pytest          # unit and API tests; no API key or database needed
-backend/.venv/bin/python evals/run_evals.py   # calls the model; costs API credit
+cd backend && .venv/bin/pytest                                  # no API key or database needed
+backend/.venv/bin/python evals/run_evals.py --retrieval-only    # offline retrieval eval, free
+backend/.venv/bin/python evals/run_evals.py                     # full pipeline; costs API credit
 ```
 
-The eval checks, per case: every quote is traceable to its source, the expected claim elements are found or correctly marked missing, key facts are mentioned, limitation flags fire, and the readiness score falls in the hand-labelled range.
+The full eval checks, per case: every quote is traceable to its source, every statutory citation is verified, the expected claim elements are found or correctly marked missing, key facts are mentioned, limitation flags fire, expected provisions are cited, and the readiness score falls in the hand-labelled range.
+
+### Retrieval results
+
+Nine cases are labelled with the provisions a solicitor would expect to see (13 labels in all). Retrieval doesn't use the model, so this runs offline:
+
+| Retriever | Recall@6 | MRR |
+|---|---|---|
+| BM25 + query expansion (current) | **77%** | 0.33 |
+| BM25 only | 15% | 0.04 |
+
+Most of the improvement comes from the expansion table and from leading with the client's description. Searching on the whole case file at once scored 46%.
+
+Caveats: 13 labels is a small sample, and the expansion table and retrieval design were developed against these same cases, so the figures are optimistic. The remaining misses are short, central sections (Late Payment Act s.1, Sale of Goods Act s.49, Supply of Goods and Services Act 1982 s.15) that lose out to longer, related sections. `pytest` fails if recall drops below 70%.
 
 ### The eval set
 
@@ -73,7 +103,7 @@ The eval checks, per case: every quote is traceable to its source, the expected 
 | Claimant is the supplier or licensor | 01, 07, 12, 17, 19 |
 | Counterparty solvency risk | 18 |
 
-`pytest` validates every fixture (documents exist, labels are valid, key phrases appear in the source, and limitation labels match the rules) without calling the model.
+`pytest` validates every fixture (documents exist, labels are valid, key phrases appear in the source, provision labels exist in the corpus, and limitation labels match the rules) without calling the model.
 
 ## Roadmap
 
@@ -82,12 +112,15 @@ The eval checks, per case: every quote is traceable to its source, the expected 
 - [x] Evidence-readiness score and limitation check
 - [x] Solicitor review with audit trail
 - [x] Eval harness with 20 fictional cases
-- [ ] Run the evals and publish results in this README
-- [ ] Legal-source RAG over legislation.gov.uk (Open Government Licence) with citation checking
+- [x] Legal RAG over legislation.gov.uk with citation checking and an offline retrieval eval
+- [ ] Run the full evals and publish results in this README
+- [ ] Hybrid retrieval (BM25 + embeddings) compared on the retrieval eval; more labelled cases
 - [ ] PDF assessment report export
 - [ ] Playwright end-to-end test
 - [ ] Deploy (Render or Fly with managed Postgres) and record a 2-minute demo video
 
 ## Data and licensing
 
-Case material in `evals/cases/` is entirely fictional. Planned legal sources: legislation.gov.uk under the Open Government Licence v3.0. Case law from the National Archives' Find Case Law is subject to its own licence terms for computational use. BAILII is not used: its terms prohibit scraping.
+Case material in `evals/cases/` is entirely fictional.
+
+Statutory text in `backend/data/legislation/` contains public sector information from legislation.gov.uk, licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). It is the latest revised text on the retrieval date recorded in the file, and may not include amendments legislation.gov.uk has yet to incorporate. Case law isn't included: the National Archives' Find Case Law has its own licence terms for computational use, and BAILII's terms prohibit scraping.

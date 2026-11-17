@@ -1,6 +1,6 @@
 import pymupdf as fitz
 
-from app.schemas import Element, ExtractedFact, ExtractedFacts, SourceRef
+from app.schemas import Element, ExtractedFact, ExtractedFacts, LegalIssue, SourceRef
 from app.services import extraction
 
 CASE = {
@@ -55,18 +55,28 @@ def test_upload_rejects_unsupported(client):
 
 
 def test_assessment_and_review_flow(client, monkeypatch):
-    fake = ExtractedFacts(
-        parties=["Harbour Signs Ltd", "Meridian Retail Ltd"],
-        facts=[
-            ExtractedFact(
-                statement="Invoice unpaid",
-                element=Element.BREACH,
-                source=SourceRef(document_id=0, quote="has not paid invoice INV-104"),
-            )
-        ],
-        open_questions=["Was there a signed order form?"],
-    )
-    monkeypatch.setattr(extraction, "extract_facts", lambda *a, **k: fake)
+    seen = {}
+
+    def fake_extract(description, docs, provisions):
+        seen["provisions"] = provisions
+        top = provisions[0]
+        return ExtractedFacts(
+            parties=["Harbour Signs Ltd", "Meridian Retail Ltd"],
+            facts=[
+                ExtractedFact(
+                    statement="Invoice unpaid",
+                    element=Element.BREACH,
+                    source=SourceRef(document_id=0, quote="has not paid invoice INV-104"),
+                )
+            ],
+            legal_issues=[
+                LegalIssue(issue="Interest may run", provision_id=top.id, quote=top.text[:40]),
+                LegalIssue(issue="Invented", provision_id="ukpga/2099/1/section/1", quote="x"),
+            ],
+            open_questions=["Was there a signed order form?"],
+        )
+
+    monkeypatch.setattr(extraction, "extract_facts", fake_extract)
 
     case_id = client.post("/cases", json=CASE).json()["id"]
     r = client.post(f"/cases/{case_id}/assessments")
@@ -74,6 +84,13 @@ def test_assessment_and_review_flow(client, monkeypatch):
     body = r.json()
     assert body["review_status"] == "pending"
     assert 0 <= body["readiness"]["score"] <= 100
+
+    # An unpaid invoice should retrieve the late payment legislation.
+    assert any("Late Payment" in p.act for p in seen["provisions"])
+    sources = {s["id"]: s for s in body["sources"]}
+    assert sources["ukpga/1980/58/section/5"]["via"] == "rule"
+    assert body["verification"]["unverified_citations"] == ["ukpga/2099/1/section/1"]
+    assert body["verification"]["unverified_quotes"] == []
 
     review_url = f"/cases/{case_id}/assessments/{body['id']}/review"
     r = client.post(review_url, json={"decision": "approved", "note": "Agree"})
@@ -98,7 +115,7 @@ def test_unverified_quotes_catches_fabrication():
                 source=SourceRef(document_id=0, quote="lost a major client"),
             ),
         ],
-        open_questions=[],
+        legal_issues=[], open_questions=[],
     )
     bad = extraction.unverified_quotes(facts, CASE["description"], [])
     assert bad == ["lost a major client"]

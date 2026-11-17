@@ -131,11 +131,16 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
                   <p>{f.statement}</p>
                   <p className="mt-1 text-xs text-slate-500">
                     {ELEMENT_LABELS[f.element]} · {docName(f.source.document_id)}: “{f.source.quote}”
+                    {latest.verification.unverified_quotes.includes(f.source.quote) && (
+                      <UnverifiedBadge />
+                    )}
                   </p>
                 </li>
               ))}
             </ul>
           </div>
+
+          <LegislationPanel assessment={latest} />
 
           <div>
             <h3 className="mb-2 text-sm font-medium">Questions for the solicitor</h3>
@@ -155,6 +160,72 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
           />
         </section>
       )}
+    </div>
+  );
+}
+
+function UnverifiedBadge() {
+  return (
+    <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-800">
+      quote not found in source
+    </span>
+  );
+}
+
+function LegislationPanel({ assessment }: { assessment: Assessment }) {
+  const { legal_issues } = assessment.facts;
+  const { unverified_citations } = assessment.verification;
+  const byId = new Map(assessment.sources.map((s) => [s.id, s]));
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium">Relevant legislation</h3>
+      {legal_issues.length === 0 && (
+        <p className="text-sm text-slate-500">No retrieved provision was judged relevant.</p>
+      )}
+      <ul className="space-y-2 text-sm">
+        {legal_issues.map((issue, i) => {
+          const source = byId.get(issue.provision_id);
+          const verified = !unverified_citations.includes(issue.provision_id);
+          return (
+            <li key={i} className="rounded-md border p-3">
+              <p>{issue.issue}</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {source ? (
+                  <a href={source.url} target="_blank" rel="noreferrer" className="underline">
+                    {source.citation}
+                  </a>
+                ) : (
+                  issue.provision_id
+                )}
+                : “{issue.quote}”
+                {verified ? (
+                  <span className="ml-2 rounded bg-emerald-100 px-1.5 py-0.5 text-[11px] font-medium text-emerald-800">
+                    verified against statute text
+                  </span>
+                ) : (
+                  <UnverifiedBadge />
+                )}
+              </p>
+            </li>
+          );
+        })}
+      </ul>
+      <details className="text-xs text-slate-500">
+        <summary className="cursor-pointer">Provisions considered ({assessment.sources.length})</summary>
+        <ul className="mt-2 space-y-1">
+          {assessment.sources.map((s) => (
+            <li key={s.id}>
+              <a href={s.url} target="_blank" rel="noreferrer" className="underline">
+                {s.citation}
+              </a>{" "}
+              {s.title} ·{" "}
+              {s.via === "rule" ? "applied by the limitation check" : `search score ${s.score}`}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2">Source: legislation.gov.uk, Open Government Licence v3.0.</p>
+      </details>
     </div>
   );
 }

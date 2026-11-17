@@ -21,9 +21,17 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <Link href="/" className="text-lg font-semibold tracking-tight">
               {PRODUCT_NAME}
             </Link>
-            <span className="text-xs text-slate-500">
-              Demo · fictional data · not legal advice
-            </span>
+            <nav className="flex items-center gap-4 text-sm">
+              <Link href="/" className="hover:underline">
+                Cases
+              </Link>
+              <Link href="/legislation" className="hover:underline">
+                Legislation
+              </Link>
+              <span className="hidden text-xs text-slate-500 sm:inline">
+                Demo · fictional data · not legal advice
+              </span>
+            </nav>
           </div>
         </header>
         <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>

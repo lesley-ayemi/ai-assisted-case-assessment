@@ -11,7 +11,7 @@ def fact(element: Element) -> ExtractedFact:
 
 
 def test_empty_facts_score_zero():
-    report = score_readiness(ExtractedFacts(parties=[], facts=[], open_questions=[]), None)
+    report = score_readiness(ExtractedFacts(parties=[], facts=[], legal_issues=[], open_questions=[]), None)
     assert report.score == 0
     assert set(report.missing) == set(Element)
 
@@ -19,7 +19,7 @@ def test_empty_facts_score_zero():
 def test_fully_supported_scores_100():
     facts = [fact(e) for e in Element for _ in range(2)]
     report = score_readiness(
-        ExtractedFacts(parties=[], facts=facts, open_questions=[]),
+        ExtractedFacts(parties=[], facts=facts, legal_issues=[], open_questions=[]),
         breach_date=date(2025, 1, 1),
         today=date(2026, 1, 1),
     )
@@ -29,7 +29,7 @@ def test_fully_supported_scores_100():
 
 def test_single_fact_is_weak_half_credit():
     report = score_readiness(
-        ExtractedFacts(parties=[], facts=[fact(Element.BREACH)], open_questions=[]), None
+        ExtractedFacts(parties=[], facts=[fact(Element.BREACH)], legal_issues=[], open_questions=[]), None
     )
     breach = next(e for e in report.elements if e.element == Element.BREACH)
     assert breach.status == "weak"

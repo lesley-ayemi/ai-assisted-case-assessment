@@ -16,6 +16,9 @@
     "score_range": [
       0,
       50
+    ],
+    "provisions": [
+      "ukpga/1998/20/section/1"
     ]
   },
   "notes": "No documents at all. Every fact must cite the client description (document 0). Score should be low."
