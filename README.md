@@ -11,12 +11,13 @@ A portfolio demo of an AI workflow for **solicitors in England and Wales** handl
 | Capability | Where |
 |---|---|
 | Structured LLM output with Pydantic validation | `backend/app/services/extraction.py` |
-| Hallucination check: every quote must appear verbatim in its cited document | `unverified_quotes()` |
+| Hallucination check: every quote must appear verbatim in its cited document, and facts that fail don't count toward the score | `unverified_quotes()` |
 | Legal RAG: BM25 retrieval over 57 statutory provisions, with lay-to-legal query expansion | `backend/app/services/legal_search.py` |
 | Citation check: every statutory citation must be a retrieved provision and quote it verbatim | `unverified_citations()` |
 | Explainable, deterministic evidence-readiness score (not a win probability) | `backend/app/services/readiness.py` |
 | Limitation Act 1980 s.5 check (six years for simple contracts) | `limitation_flags()` |
 | Human-in-the-loop review with audit trail | `POST /cases/{id}/assessments/{id}/review` |
+| PDF assessment report: review status, verification marks, sources and attribution | `backend/app/services/report.py` |
 | Evaluation suite: offline retrieval metrics plus full-pipeline checks | `evals/` |
 
 ## Architecture
@@ -39,6 +40,14 @@ Next.js (TypeScript, Tailwind)  ──►  FastAPI  ──►  PostgreSQL (SQLit
 5. Limitation Act 1980 s.5 isn't retrieved: the rule-based limitation check applies it to every case and cites it.
 
 Retrieval sits behind a `Retriever` interface, so vector or hybrid search (for example pgvector with an embeddings model) can be added later and compared on the same eval.
+
+### PDF report
+
+Each assessment exports as an A4 PDF for the solicitor's file (`GET /cases/{id}/assessments/{id}/report.pdf`, or **Download PDF report** on the case page). It shows the review status prominently (a draft can't pass as approved), the readiness breakdown and flags, every fact and citation marked verified or not, the questions for the solicitor, the review record, and the provisions considered with Open Government Licence attribution.
+
+See [`docs/sample-report.pdf`](docs/sample-report.pdf). It is illustrative: the facts were written by hand for eval case 04, not produced by the model. One deliberately fabricated quote shows how an unverified fact is flagged and left out of the score (Causation stays "missing").
+
+Rendering uses PyMuPDF's HTML-to-PDF Story API, so no extra dependency is needed. The layout avoids CSS background fills, because Story repaints them onto later pages.
 
 ## Running locally
 
@@ -115,7 +124,7 @@ Caveats: 13 labels is a small sample, and the expansion table and retrieval desi
 - [x] Legal RAG over legislation.gov.uk with citation checking and an offline retrieval eval
 - [ ] Run the full evals and publish results in this README
 - [ ] Hybrid retrieval (BM25 + embeddings) compared on the retrieval eval; more labelled cases
-- [ ] PDF assessment report export
+- [x] PDF assessment report export
 - [ ] Playwright end-to-end test
 - [ ] Deploy (Render or Fly with managed Postgres) and record a 2-minute demo video
 

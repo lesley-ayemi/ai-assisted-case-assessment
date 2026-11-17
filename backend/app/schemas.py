@@ -99,6 +99,8 @@ class ReadinessReport(BaseModel):
     elements: list[ElementScore]
     flags: list[str]
     missing: list[Element]
+    # Facts left out of the score because their quote was not found in the source.
+    excluded_facts: int = 0
 
 
 # ---------- Legal sources ----------

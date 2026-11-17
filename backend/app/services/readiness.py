@@ -4,6 +4,7 @@ Deliberately deterministic and explainable: it measures how well the extracted f
 cover each element of a breach-of-contract claim. It is NOT a prediction of outcome.
 """
 
+from collections.abc import Collection
 from datetime import date
 
 from app.schemas import Element, ElementScore, ExtractedFacts, ReadinessReport
@@ -55,11 +56,21 @@ def limitation_flags(breach_date: date | None, today: date) -> list[str]:
 
 
 def score_readiness(
-    extracted: ExtractedFacts, breach_date: date | None, today: date | None = None
+    extracted: ExtractedFacts,
+    breach_date: date | None,
+    today: date | None = None,
+    unverified_quotes: Collection[str] = (),
 ) -> ReadinessReport:
+    """Score evidence coverage. Facts whose quote failed verification don't count, so a
+    hallucinated fact can never raise the score."""
     today = today or date.today()
+    unverified = set(unverified_quotes)
     counts = {e: 0 for e in Element}
+    excluded = 0
     for fact in extracted.facts:
+        if fact.source.quote in unverified:
+            excluded += 1
+            continue
         counts[fact.element] += 1
 
     elements: list[ElementScore] = []
@@ -80,4 +91,5 @@ def score_readiness(
         elements=elements,
         flags=limitation_flags(breach_date, today),
         missing=[e.element for e in elements if e.status == "missing"],
+        excluded_facts=excluded,
     )

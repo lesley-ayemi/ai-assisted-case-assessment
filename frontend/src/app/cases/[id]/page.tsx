@@ -1,7 +1,7 @@
 "use client";
 
 import { use, useCallback, useEffect, useState } from "react";
-import { api, ELEMENT_LABELS, type Assessment, type Case } from "@/lib/api";
+import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
 const STATUS_STYLES = {
   supported: "bg-emerald-100 text-emerald-800",
@@ -95,6 +95,18 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
 
       {latest && (
         <section className="space-y-6 rounded-lg border bg-white p-4">
+          <div className="flex items-center justify-between gap-3 border-b pb-3">
+            <p className="text-xs text-slate-500">
+              Assessment #{latest.id} · {new Date(latest.created_at).toLocaleString()} ·{" "}
+              <span className="capitalize">{latest.review_status}</span>
+            </p>
+            <a
+              href={reportUrl(caseId, latest.id)}
+              className="rounded-md border px-3 py-1.5 text-sm hover:bg-slate-50"
+            >
+              Download PDF report
+            </a>
+          </div>
           <div className="flex items-baseline justify-between">
             <h2 className="font-medium">Evidence readiness</h2>
             <span className="text-3xl font-semibold">{latest.readiness.score}/100</span>
@@ -103,6 +115,12 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
             How completely the evidence covers each element of the claim. Not a prediction of
             outcome.
           </p>
+          {!!latest.readiness.excluded_facts && (
+            <p className="text-xs text-red-700">
+              {latest.readiness.excluded_facts} fact(s) left out of the score because the quote
+              was not found in the source.
+            </p>
+          )}
 
           <div className="grid gap-2 sm:grid-cols-3">
             {latest.readiness.elements.map((el) => (

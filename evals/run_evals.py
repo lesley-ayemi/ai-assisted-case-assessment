@@ -92,11 +92,12 @@ def run_case(folder: Path) -> dict:
     elapsed = time.perf_counter() - started
 
     breach = date.fromisoformat(spec["breach_date"]) if spec.get("breach_date") else None
-    report = score_readiness(facts, breach, today=date.fromisoformat(spec["as_of"]))
+    bad_quotes = unverified_quotes(facts, spec["description"], docs)
+    report = score_readiness(facts, breach, today=date.fromisoformat(spec["as_of"]),
+                             unverified_quotes=bad_quotes)
 
     status = {e.element.value: e.status for e in report.elements}
     all_text = " ".join(f.statement + " " + f.source.quote for f in facts.facts)
-    bad_quotes = unverified_quotes(facts, spec["description"], docs)
     bad_citations = unverified_citations(facts, provisions)
     cited = {i.provision_id for i in facts.legal_issues}
     lo, hi = exp["score_range"]

@@ -48,3 +48,20 @@ def test_limitation_close_to_expiry():
 
 def test_limitation_unknown_breach_date():
     assert "unknown" in limitation_flags(None, today=date(2026, 1, 1))[0]
+
+
+def test_unverified_facts_do_not_count():
+    good = fact(Element.CAUSATION)
+    fabricated = ExtractedFact(
+        statement="Supplier admitted fault", element=Element.CAUSATION,
+        source=SourceRef(document_id=1, quote="we accept it was our fault"),
+    )
+    facts = ExtractedFacts(parties=[], facts=[good, fabricated], legal_issues=[], open_questions=[])
+
+    trusted = score_readiness(facts, None, unverified_quotes=[])
+    checked = score_readiness(facts, None, unverified_quotes=["we accept it was our fault"])
+
+    causation = next(e for e in checked.elements if e.element == Element.CAUSATION)
+    assert causation.status == "weak" and causation.fact_count == 1
+    assert checked.excluded_facts == 1 and trusted.excluded_facts == 0
+    assert checked.score < trusted.score

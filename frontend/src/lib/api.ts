@@ -83,6 +83,7 @@ export type Assessment = {
     }[];
     flags: string[];
     missing: Element[];
+    excluded_facts?: number;
   };
   model: string;
   review_status: "pending" | "approved" | "rejected" | "amended";
@@ -126,6 +127,9 @@ export const api = {
       json({ decision, note }),
     ),
 };
+
+export const reportUrl = (caseId: number, assessmentId: number) =>
+  `${API_URL}/cases/${caseId}/assessments/${assessmentId}/report.pdf`;
 
 export const ELEMENT_LABELS: Record<Element, string> = {
   contract_formed: "Contract formed",

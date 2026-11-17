@@ -1,6 +1,7 @@
+import re
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,7 @@ from app.services import extraction
 from app.services.documents import UnsupportedDocument, extract_text
 from app.services.legal_search import get_provision, search_case
 from app.services.readiness import LIMITATION_PROVISION_ID, score_readiness
+from app.services.report import build_report_pdf
 
 router = APIRouter(prefix="/cases", tags=["cases"])
 
@@ -32,6 +34,13 @@ def _get_case(db: Session, case_id: int) -> Case:
     if case is None:
         raise HTTPException(404, "Case not found")
     return case
+
+
+def _get_assessment(db: Session, case_id: int, assessment_id: int) -> Assessment:
+    assessment = db.get(Assessment, assessment_id)
+    if assessment is None or assessment.case_id != case_id:
+        raise HTTPException(404, "Assessment not found")
+    return assessment
 
 
 @router.post("", response_model=CaseOut, status_code=201)
@@ -88,7 +97,6 @@ def run_assessment(case_id: int, db: Session = Depends(get_db)):
         facts = extraction.extract_facts(case.description, docs, provisions)
     except extraction.ExtractionRefused as e:
         raise HTTPException(422, str(e)) from e
-    readiness = score_readiness(facts, case.breach_date)
 
     sources = [
         ProvisionRef(id=h.provision.id, citation=h.provision.citation, title=h.provision.title,
@@ -103,6 +111,8 @@ def run_assessment(case_id: int, db: Session = Depends(get_db)):
         unverified_quotes=extraction.unverified_quotes(facts, case.description, docs),
         unverified_citations=extraction.unverified_citations(facts, provisions),
     )
+    readiness = score_readiness(facts, case.breach_date,
+                                unverified_quotes=verification.unverified_quotes)
 
     assessment = Assessment(
         case=case,
@@ -128,9 +138,7 @@ def list_assessments(case_id: int, db: Session = Depends(get_db)):
 def review_assessment(
     case_id: int, assessment_id: int, body: ReviewDecision, db: Session = Depends(get_db)
 ):
-    assessment = db.get(Assessment, assessment_id)
-    if assessment is None or assessment.case_id != case_id:
-        raise HTTPException(404, "Assessment not found")
+    assessment = _get_assessment(db, case_id, assessment_id)
     if assessment.review_status != "pending":
         raise HTTPException(409, "Assessment already reviewed")
     assessment.review_status = body.decision
@@ -140,3 +148,20 @@ def review_assessment(
     db.commit()
     db.refresh(assessment)
     return assessment
+
+
+@router.get(
+    "/{case_id}/assessments/{assessment_id}/report.pdf",
+    response_class=Response,
+    responses={200: {"content": {"application/pdf": {}}}},
+)
+def download_report(case_id: int, assessment_id: int, db: Session = Depends(get_db)):
+    assessment = _get_assessment(db, case_id, assessment_id)
+    pdf = build_report_pdf(assessment.case, assessment)
+    slug = re.sub(r"[^a-z0-9]+", "-", assessment.case.title.lower()).strip("-")[:60] or "case"
+    filename = f"assessment-{assessment.id}-{slug}.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
