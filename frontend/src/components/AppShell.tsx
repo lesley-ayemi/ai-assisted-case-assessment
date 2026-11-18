@@ -3,7 +3,7 @@
 import { BookOpenText, FolderOpen, Menu, Plus, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PRODUCT_NAME } from "@/lib/product";
 
 const NAV = [
@@ -43,6 +43,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const sidebar = (
     <div className="flex h-full flex-col">
@@ -99,19 +100,39 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           className="ml-auto hidden w-72 sm:block"
           onSubmit={(e) => {
             e.preventDefault();
-            if (q.trim().length >= 2) router.push(`/legislation?q=${encodeURIComponent(q.trim())}`);
+            if (q.trim().length < 2) return;
+            router.push(`/legislation?q=${encodeURIComponent(q.trim())}`);
+            setQ(""); // the results page shows the query in its own search field
           }}
         >
-          <label className="relative block">
-            <span className="sr-only">Search legislation</span>
+          <div className="relative">
+            <label htmlFor="topbar-search" className="sr-only">
+              Search legislation
+            </label>
             <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-ink-faint" aria-hidden />
             <input
+              id="topbar-search"
+              ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
+              onKeyDown={(e) => e.key === "Escape" && setQ("")}
               placeholder="Search legislation"
-              className="w-full rounded-md border bg-canvas py-1.5 pr-3 pl-9 text-sm placeholder:text-ink-faint focus:border-brand focus:bg-white focus:outline-none"
+              className="w-full rounded-md border bg-canvas py-1.5 pr-8 pl-9 text-sm placeholder:text-ink-faint focus:border-brand focus:bg-white focus:outline-none"
             />
-          </label>
+            {q && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQ("");
+                  inputRef.current?.focus();
+                }}
+                aria-label="Clear search"
+                className="absolute top-1/2 right-1.5 grid size-6 -translate-y-1/2 place-items-center rounded text-ink-faint hover:bg-line-soft hover:text-ink"
+              >
+                <X size={14} aria-hidden />
+              </button>
+            )}
+          </div>
         </form>
       </header>
 

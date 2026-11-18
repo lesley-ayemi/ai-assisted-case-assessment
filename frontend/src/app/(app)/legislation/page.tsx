@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ExternalLink, Search } from "lucide-react";
+import { ChevronDown, ExternalLink, Search, X } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
 import { btn, field } from "@/components/ui";
 import { api, type ProvisionHit } from "@/lib/api";
@@ -74,9 +74,23 @@ export default function LegislationSearch({
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && setQuery("")}
                 placeholder="Supplier delivered faulty goods"
-                className={`${field} pl-9`}
+                className={`${field} pr-9 pl-9`}
               />
+              {query && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    setQuery("");
+                    e.currentTarget.parentElement?.querySelector("input")?.focus();
+                  }}
+                  aria-label="Clear search"
+                  className="absolute top-1/2 right-2 grid size-6 -translate-y-1/2 place-items-center rounded text-ink-faint hover:bg-line-soft hover:text-ink"
+                >
+                  <X size={14} aria-hidden />
+                </button>
+              )}
             </label>
             <button className={btn.primary}>Search</button>
           </form>
