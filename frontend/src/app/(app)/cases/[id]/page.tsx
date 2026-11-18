@@ -8,6 +8,7 @@ import {
   Play,
 } from "lucide-react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
+import AssessmentProgress from "@/components/AssessmentProgress";
 import AssessmentSummary from "@/components/AssessmentSummary";
 import CaseDetails from "@/components/CaseDetails";
 import ClientAccount from "@/components/ClientAccount";
@@ -15,9 +16,10 @@ import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
 import NotFoundPanel from "@/components/NotFoundPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
+import { CaseSkeleton } from "@/components/Skeletons";
 import ReadinessPanel from "@/components/ReadinessPanel";
 import ReviewPanel from "@/components/ReviewPanel";
-import { btn, Card, caseStatus, Pill, type Tone } from "@/components/ui";
+import { btn, Card, caseStatus, Pill, Spinner, type Tone } from "@/components/ui";
 import { api, ApiError, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
 const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: Tone }> = {
@@ -89,7 +91,7 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
         </button>
       </div>
     );
-  if (!c) return <p className="text-sm text-ink-soft">Loading case…</p>;
+  if (!c) return <CaseSkeleton />;
   const latest = assessments.at(-1);
   const status = caseStatus(c.status);
 
@@ -117,8 +119,8 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
             disabled={!!busy}
             className={btn.primary}
           >
-            <Play size={15} aria-hidden />
-            {busy === "assess" ? "Analysing…" : latest ? "Run assessment again" : "Run assessment"}
+            {busy === "assess" ? <Spinner /> : <Play size={15} aria-hidden />}
+            {busy === "assess" ? "Running…" : latest ? "Run assessment again" : "Run assessment"}
           </button>
         </div>
       </div>
@@ -146,7 +148,8 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
         </div>
 
         <div className="min-w-0 space-y-6">
-          {latest ? (
+          {busy === "assess" && <AssessmentProgress />}
+          {busy === "assess" && !latest ? null : latest ? (
             <AssessmentView
               assessment={latest}
               caseDocs={c.documents}

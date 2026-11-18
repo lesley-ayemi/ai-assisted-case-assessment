@@ -61,3 +61,28 @@ export const CASE_STATUS: Record<string, { label: string; tone: Tone }> = {
 export function caseStatus(status: string) {
   return CASE_STATUS[status] ?? { label: status.replace("_", " "), tone: "neutral" as Tone };
 }
+
+/** A grey placeholder block for skeleton screens. Hidden from screen readers; wrap it in Loading. */
+export function Skeleton({ className = "" }: { className?: string }) {
+  return <div aria-hidden className={`animate-pulse rounded bg-line ${className}`} />;
+}
+
+/** Announces a loading region once, for screen readers, around skeleton content. */
+export function Loading({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div role="status" aria-live="polite" aria-busy="true">
+      <span className="sr-only">{label}</span>
+      {children}
+    </div>
+  );
+}
+
+/** Small spinning ring for busy buttons. */
+export function Spinner({ className = "" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`inline-block size-3.5 animate-spin rounded-full border-2 border-current border-r-transparent ${className}`}
+    />
+  );
+}

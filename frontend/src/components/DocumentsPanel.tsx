@@ -3,6 +3,7 @@
 import { Eye, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
+import { TextSkeleton } from "@/components/Skeletons";
 import { Card } from "@/components/ui";
 import { api, type Assessment, type DocumentOut } from "@/lib/api";
 import { withHighlights } from "@/lib/highlight";
@@ -73,7 +74,11 @@ function DocumentViewer({
       </div>
       <div className="max-h-[65vh] overflow-y-auto px-5 py-4">
         {text === null ? (
-          <p className="text-sm text-ink-soft">{error ? "Couldn't load the document text." : "Loading…"}</p>
+          error ? (
+            <p className="text-sm text-ink-soft">Couldn&apos;t load the document text.</p>
+          ) : (
+            <TextSkeleton lines={8} label="Loading document text" />
+          )
         ) : (
           <p className="font-serif text-[15px] leading-relaxed whitespace-pre-wrap">{withHighlights(text, quotes)}</p>
         )}

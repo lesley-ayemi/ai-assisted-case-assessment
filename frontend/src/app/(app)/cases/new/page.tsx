@@ -4,7 +4,7 @@ import { FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cloneElement, useId, useState } from "react";
 import DateField from "@/components/DateField";
-import { btn, field } from "@/components/ui";
+import { btn, field, Spinner } from "@/components/ui";
 import { api, type CaseCreate } from "@/lib/api";
 
 // Eval case 04 (evals/cases/04-defective-worktops), so a demo can get to an assessment quickly.
@@ -187,6 +187,7 @@ export default function NewCase() {
             Cancel
           </button>
           <button disabled={saving} className={btn.primary}>
+            {saving && <Spinner />}
             {saving ? "Creating…" : "Create case"}
           </button>
         </div>

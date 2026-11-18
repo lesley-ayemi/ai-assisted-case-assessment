@@ -2,6 +2,7 @@
 
 import { ChevronDown, CircleAlert, ExternalLink, Scale, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { TextSkeleton } from "@/components/Skeletons";
 import { Card, Pill } from "@/components/ui";
 import { api, type Assessment, type LegalIssue, type Provision, type ProvisionRef } from "@/lib/api";
 
@@ -121,7 +122,11 @@ function IssueRow({ issue, source, verified }: { issue: LegalIssue; source?: Pro
                 </a>
               </>
             ) : (
-              <p className="text-sm text-ink-soft">{loadError ? "Couldn't load the section text." : "Loading…"}</p>
+              loadError ? (
+              <p className="text-sm text-ink-soft">Couldn&apos;t load the section text.</p>
+            ) : (
+              <TextSkeleton lines={5} label="Loading section text" />
+            )
             )}
           </div>
         )}

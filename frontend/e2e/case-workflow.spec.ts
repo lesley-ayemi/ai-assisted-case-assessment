@@ -36,8 +36,14 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
     await expect(page.getByRole("list", { name: "Documents" }).getByText(name)).toBeVisible();
   }
 
-  // Assessment
+  // Assessment. The stub answers instantly, so hold the request briefly to see the progress panel.
+  await page.route("**/cases/*/assessments", async (route) => {
+    if (route.request().method() === "POST") await new Promise((r) => setTimeout(r, 1500));
+    await route.continue();
+  });
   await page.getByRole("button", { name: "Run assessment" }).click();
+  await expect(page.getByText("Running the assessment")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Running…" })).toBeDisabled();
   await expect(page.getByRole("heading", { name: "Evidence readiness" })).toBeVisible();
   await expect(page.getByText(/^\d{1,3}\/100$/)).toBeVisible();
 

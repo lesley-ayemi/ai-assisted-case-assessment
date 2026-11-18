@@ -2,7 +2,8 @@
 
 import { ChevronDown, ExternalLink, Search, Sparkles, X } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
-import { btn, field, Pill } from "@/components/ui";
+import { ResultsSkeleton } from "@/components/Skeletons";
+import { btn, field, Pill, Spinner } from "@/components/ui";
 import { api, type LegislationStats, type ProvisionHit, type QueryExpansion } from "@/lib/api";
 
 const EXAMPLES = [
@@ -102,11 +103,13 @@ export default function LegislationSearch({ searchParams }: { searchParams: Prom
   const [stats, setStats] = useState<LegislationStats | null>(null);
   const [act, setAct] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const search = useCallback(async (q: string) => {
     setQuery(q);
     setError(null);
     setAct(null);
+    setSearching(true);
     try {
       const [h, x] = await Promise.all([api.searchLegislation(q, 10), api.expandQuery(q)]);
       setHits(h);
@@ -114,6 +117,8 @@ export default function LegislationSearch({ searchParams }: { searchParams: Prom
       setSearched(q);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Search failed");
+    } finally {
+      setSearching(false);
     }
   }, []);
 
@@ -173,7 +178,10 @@ export default function LegislationSearch({ searchParams }: { searchParams: Prom
               </button>
             )}
           </label>
-          <button className={`${btn.primary} h-11 px-6`}>Search</button>
+          <button disabled={searching} className={`${btn.primary} h-11 px-6`}>
+            {searching && <Spinner />}
+            {searching ? "Searching…" : "Search"}
+          </button>
         </form>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className="text-xs text-ink-soft">Try:</span>
@@ -213,7 +221,9 @@ export default function LegislationSearch({ searchParams }: { searchParams: Prom
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
-          {hits === null ? (
+          {searching ? (
+            <ResultsSkeleton />
+          ) : hits === null ? (
             <div className="rounded-lg border border-dashed bg-white px-6 py-12 text-center text-sm text-ink-soft">
               Search results appear here, best match first, with the matching words highlighted.
             </div>
