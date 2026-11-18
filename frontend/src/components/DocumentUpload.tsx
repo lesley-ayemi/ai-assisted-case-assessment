@@ -28,7 +28,9 @@ export default function DocumentUpload({
   disabled,
   onUploaded,
   onBusyChange,
+  compact = false,
 }: {
+  compact?: boolean;
   caseId: number;
   disabled: boolean;
   onUploaded: () => Promise<void> | void;
@@ -87,7 +89,9 @@ export default function DocumentUpload({
           setDragging(false);
           add([...e.dataTransfer.files]);
         }}
-        className={`flex flex-col items-center rounded-lg border-2 border-dashed px-4 py-5 text-center transition-colors ${
+        className={`flex items-center rounded-lg border-2 border-dashed transition-colors ${
+          compact ? "gap-3 px-3 py-2.5 text-left" : "flex-col px-4 py-5 text-center"
+        } ${
           dragging
             ? "border-brand bg-brand-tint"
             : locked
@@ -95,13 +99,26 @@ export default function DocumentUpload({
               : "cursor-pointer border-line hover:border-brand/50 hover:bg-canvas/60"
         } has-[:focus-visible]:border-brand has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-brand/20`}
       >
-        <span className="grid size-9 place-items-center rounded-full bg-brand-tint text-brand">
-          <Upload size={17} aria-hidden />
+        <span
+          className={`grid shrink-0 place-items-center rounded-full bg-brand-tint text-brand ${compact ? "size-8" : "size-9"}`}
+        >
+          <Upload size={compact ? 15 : 17} aria-hidden />
         </span>
-        <span className="mt-2 text-sm font-medium">
-          {dragging ? "Drop to upload" : <>Drag files here or <span className="text-brand underline underline-offset-2">browse</span></>}
+        <span className={compact ? "min-w-0" : "contents"}>
+          <span className={`block text-sm font-medium ${compact ? "" : "mt-2"}`}>
+            {dragging ? (
+              "Drop to upload"
+            ) : (
+              <>
+                {compact ? "Add more: drop or " : "Drag files here or "}
+                <span className="text-brand underline underline-offset-2">browse</span>
+              </>
+            )}
+          </span>
+          <span className="mt-0.5 block text-xs text-ink-soft">
+            {compact ? "PDF, TXT, MD or EML, 20 MB max" : "PDF, TXT, MD or EML, up to 20 MB each"}
+          </span>
         </span>
-        <span className="mt-0.5 text-xs text-ink-soft">PDF, TXT, MD or EML, up to 20 MB each</span>
         <input
           ref={input}
           type="file"

@@ -45,6 +45,10 @@ def test_upload_pdf_extracts_text(client):
     assert r.status_code == 201
     assert r.json()["page_count"] == 1
 
+    doc = client.get(f"/cases/{case_id}/documents/{r.json()['id']}").json()
+    assert "Invoice INV-104" in doc["text"]
+    assert client.get(f"/cases/{case_id}/documents/999").status_code == 404
+
 
 def test_upload_rejects_unsupported(client):
     case_id = client.post("/cases", json=CASE).json()["id"]

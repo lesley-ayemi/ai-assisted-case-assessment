@@ -13,7 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
-import DocumentUpload from "@/components/DocumentUpload";
+import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
 import ReviewPanel from "@/components/ReviewPanel";
@@ -137,26 +137,14 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{c.description}</p>
           </Card>
 
-          <Card title="Documents" action={<span className="text-xs text-ink-soft">{c.documents.length}</span>}>
-            <ul aria-label="Documents" className="mb-4 divide-y divide-line-soft text-sm">
-              {c.documents.map((d) => (
-                <li key={d.id} className="flex items-center gap-3 py-2 first:pt-0">
-                  <FileBadge filename={d.filename} />
-                  <span className="min-w-0 flex-1 truncate">{d.filename}</span>
-                  <span className="text-xs text-ink-faint">
-                    {d.page_count} {d.page_count === 1 ? "page" : "pages"}
-                  </span>
-                </li>
-              ))}
-              {c.documents.length === 0 && <li className="pb-1 text-ink-soft">None uploaded yet.</li>}
-            </ul>
-            <DocumentUpload
-              caseId={caseId}
-              disabled={!!busy && busy !== "upload"}
-              onUploaded={load}
-              onBusyChange={(b) => setBusy(b ? "upload" : null)}
-            />
-          </Card>
+          <DocumentsPanel
+            caseId={caseId}
+            documents={c.documents}
+            assessment={latest}
+            disabled={!!busy && busy !== "upload"}
+            onUploaded={load}
+            onBusyChange={(b) => setBusy(b ? "upload" : null)}
+          />
         </div>
 
         <div className="min-w-0 space-y-6">
@@ -180,16 +168,6 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
         </div>
       </div>
     </div>
-  );
-}
-
-function FileBadge({ filename }: { filename: string }) {
-  const ext = filename.includes(".") ? filename.split(".").pop()!.toUpperCase().slice(0, 4) : "FILE";
-  const tone = ext === "PDF" ? "bg-bad-tint text-bad" : ext === "EML" ? "bg-brand-tint text-brand" : "bg-line-soft text-ink-soft";
-  return (
-    <span className={`grid h-7 w-9 shrink-0 place-items-center rounded text-[10px] font-semibold ${tone}`} aria-hidden>
-      {ext}
-    </span>
   );
 }
 

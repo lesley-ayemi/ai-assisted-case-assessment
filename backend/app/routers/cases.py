@@ -13,6 +13,7 @@ from app.schemas import (
     CaseCreate,
     CaseOut,
     DocumentOut,
+    DocumentText,
     ProvisionRef,
     ReviewDecision,
     Verification,
@@ -82,6 +83,16 @@ async def upload_document(case_id: int, file: UploadFile, db: Session = Depends(
     db.add(doc)
     db.commit()
     db.refresh(doc)
+    return doc
+
+
+@router.get("/{case_id}/documents/{document_id}", response_model=DocumentText)
+def get_document(case_id: int, document_id: int, db: Session = Depends(get_db)):
+    """A document with the text extracted from it, as the model saw it."""
+    case = _get_case(db, case_id)
+    doc = next((d for d in case.documents if d.id == document_id), None)
+    if doc is None:
+        raise HTTPException(404, "Document not found")
     return doc
 
 

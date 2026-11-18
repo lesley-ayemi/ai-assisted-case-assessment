@@ -45,6 +45,15 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   expect(await facts.count()).toBe(4);
   await expect(page.getByText("quote not found in source")).toHaveCount(0);
 
+  // Each document can be opened, with the passages facts quote highlighted
+  const firstDoc = (spec.documents as string[])[0];
+  await page.getByRole("button", { name: `View ${firstDoc}` }).click();
+  const viewer = page.getByRole("dialog", { name: firstDoc });
+  await expect(viewer).toBeVisible();
+  await expect(viewer.locator("mark").first()).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(viewer).toBeHidden();
+
   // Retrieved legislation is cited and verified against the statute text
   await expect(page.getByRole("link", { name: "Sale of Goods Act 1979, s.14" }).first()).toBeVisible();
   await expect(page.getByText("verified against statute text").first()).toBeVisible();

@@ -25,6 +25,10 @@ class DocumentOut(BaseModel):
     uploaded_at: datetime
 
 
+class DocumentText(DocumentOut):
+    text: str
+
+
 class CaseOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

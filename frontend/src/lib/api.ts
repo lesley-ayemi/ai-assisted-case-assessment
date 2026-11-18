@@ -126,6 +126,8 @@ export const api = {
     form.append("file", file);
     return request<DocumentOut>(`/cases/${caseId}/documents`, { method: "POST", body: form });
   },
+  getDocument: (caseId: number, documentId: number) =>
+    request<DocumentOut & { text: string }>(`/cases/${caseId}/documents/${documentId}`),
   listAssessments: (caseId: number) => request<Assessment[]>(`/cases/${caseId}/assessments`),
   runAssessment: (caseId: number) =>
     request<Assessment>(`/cases/${caseId}/assessments`, { method: "POST" }),
