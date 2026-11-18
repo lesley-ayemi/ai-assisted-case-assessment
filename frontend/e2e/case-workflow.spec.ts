@@ -9,7 +9,9 @@ const spec = JSON.parse(readFileSync(path.join(CASE_DIR, "case.json"), "utf8"));
 test("solicitor takes a case from intake to approved PDF report", async ({ page }) => {
   // Intake
   await page.goto("/");
-  await page.getByRole("link", { name: "New case" }).click();
+  await page.getByRole("link", { name: "Open the demo" }).first().click();
+  await expect(page).toHaveURL(/\/cases$/);
+  await page.getByRole("main").getByRole("link", { name: "New case" }).first().click();
   await page.getByLabel("Title").fill(spec.title);
   await page.getByLabel("Client").fill(spec.client_name);
   await page.getByLabel("Counterparty").fill(spec.counterparty);
@@ -32,9 +34,9 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await page.getByRole("button", { name: "Run assessment" }).click();
   await expect(page.getByRole("heading", { name: "Evidence readiness" })).toBeVisible();
   await expect(page.getByText(/^\d{1,3}\/100$/)).toBeVisible();
-  await expect(page.getByText("pending", { exact: true })).toBeVisible();
+  await expect(page.getByText("Draft: not yet reviewed")).toBeVisible();
 
-  const facts = page.locator("h3:has-text('Extracted facts') + ul > li");
+  const facts = page.getByRole("list", { name: "Extracted facts" }).getByRole("listitem");
   await expect(facts.first()).toBeVisible();
   expect(await facts.count()).toBeGreaterThanOrEqual(6);
   await expect(page.getByText("quote not found in source")).toHaveCount(0);
@@ -63,9 +65,9 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await expect(page.getByRole("button", { name: "Approve with amendments" })).toHaveCount(0);
 
   // The case list reflects the review
-  await page.getByRole("link", { name: "Cases" }).click();
-  const row = page.getByRole("link").filter({ hasText: spec.title });
-  await expect(row).toContainText("reviewed");
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Cases" }).click();
+  const row = page.getByRole("row").filter({ hasText: spec.title });
+  await expect(row).toContainText("Reviewed");
 });
 
 test("unsupported uploads are rejected with a clear message", async ({ page, request }) => {
@@ -81,7 +83,7 @@ test("unsupported uploads are rejected with a clear message", async ({ page, req
   await page.locator('input[type="file"]').setInputFiles({
     name: "photo.png", mimeType: "image/png", buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
   });
-  await expect(page.locator("span.text-red-600")).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: /\S/ })).toBeVisible();
   await expect(page.getByText("None uploaded yet.")).toBeVisible();
 });
 

@@ -1,21 +1,67 @@
 @import "tailwindcss";
 
+/*
+  Design tokens. Deep green ink and a highlighter yellow-green: the highlighter marks text
+  that was found verbatim in a source document, so it carries meaning and is used for
+  nothing else. Serif (Literata) is for quoted document and statute text; the interface is
+  IBM Plex Sans.
+*/
 @theme inline {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-literata), ui-serif, Georgia, serif;
 }
 
-/* The UI is designed light-only; colours come from Tailwind classes in the layout. */
+@theme {
+  --color-ink: #14302f;
+  --color-ink-soft: #4d6463;
+  --color-ink-faint: #7d908f;
+  --color-canvas: #f3f5f5;
+  --color-line: #dfe5e4;
+  --color-line-soft: #edf1f0;
+  --color-brand: #1e5a4c;
+  --color-brand-hover: #174a3e;
+  --color-brand-tint: #e5efec;
+  --color-highlight: #e4f08c;
+  --color-ok: #1e6b4a;
+  --color-ok-tint: #e3f2ea;
+  --color-warn: #8a5a00;
+  --color-warn-tint: #fbf0d9;
+  --color-bad: #a3322a;
+  --color-bad-tint: #fbe9e7;
+}
+
+/* The UI is light-only. */
 :root {
   color-scheme: light;
 }
 
-/* Tailwind 4 borders default to currentColor; use a light grey like Tailwind 3 did. */
 @layer base {
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-slate-200, currentColor);
+    border-color: var(--color-line, currentColor);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  mark {
+    background: var(--color-highlight);
+    color: inherit;
+    padding: 0 2px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    transition: none !important;
+    animation: none !important;
   }
 }

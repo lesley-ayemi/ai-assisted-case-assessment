@@ -85,7 +85,7 @@ cp .env.example .env.local
 npm install && npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:3000 for the landing page, and click **Open the demo** for the case list.
 
 ### 3. Try it
 
