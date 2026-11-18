@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
 import { Card } from "@/components/ui";
 import { api, type Assessment, type DocumentOut } from "@/lib/api";
+import { withHighlights } from "@/lib/highlight";
 
 const shortDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
@@ -18,23 +19,6 @@ function FileBadge({ filename }: { filename: string }) {
       {ext}
     </span>
   );
-}
-
-/** Splits text around every quote (whitespace-tolerant) and marks the quoted parts. */
-function withHighlights(text: string, quotes: string[]) {
-  const patterns = [...new Set(quotes)]
-    .filter((q) => q.trim())
-    .sort((a, b) => b.length - a.length)
-    .map((q) =>
-      q
-        .trim()
-        .split(/\s+/)
-        .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-        .join("\\s+"),
-    );
-  if (!patterns.length) return [text];
-  const re = new RegExp(`(${patterns.join("|")})`, "g");
-  return text.split(re).map((part, i) => (i % 2 === 1 ? <mark key={i}>{part}</mark> : part));
 }
 
 function DocumentViewer({

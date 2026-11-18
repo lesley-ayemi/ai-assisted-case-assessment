@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 import CaseDetails from "@/components/CaseDetails";
+import ClientAccount from "@/components/ClientAccount";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
@@ -115,9 +116,7 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
         <div className="space-y-6">
           <CaseDetails c={c} />
 
-          <Card title="Client's account">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{c.description}</p>
-          </Card>
+          <ClientAccount description={c.description} assessment={latest} />
 
           <DocumentsPanel
             caseId={caseId}

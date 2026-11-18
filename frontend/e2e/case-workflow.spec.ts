@@ -47,6 +47,10 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   expect(await facts.count()).toBe(4);
   await expect(page.getByText("quote not found in source")).toHaveCount(0);
 
+  // The client's account highlights the passages facts quote from it
+  const account = page.locator("section", { has: page.getByRole("heading", { name: "Client's account" }) });
+  await expect(account.locator("mark").first()).toBeVisible();
+
   // Each document can be opened, with the passages facts quote highlighted
   const firstDoc = (spec.documents as string[])[0];
   await page.getByRole("button", { name: `View ${firstDoc}` }).click();
