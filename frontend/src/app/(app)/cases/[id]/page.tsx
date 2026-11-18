@@ -3,8 +3,6 @@
 import {
   ChevronDown,
   ChevronUp,
-  CircleAlert,
-  CircleCheck,
   Download,
   FileCheck2,
   Gauge,
@@ -18,15 +16,10 @@ import ClientAccount from "@/components/ClientAccount";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
+import ReadinessPanel from "@/components/ReadinessPanel";
 import ReviewPanel from "@/components/ReviewPanel";
 import { btn, Card, caseStatus, Pill, StatCard, type Tone } from "@/components/ui";
 import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
-
-const ELEMENT_STATUS: Record<string, { label: string; tone: Tone }> = {
-  supported: { label: "Supported", tone: "ok" },
-  weak: { label: "Weak", tone: "warn" },
-  missing: { label: "Missing", tone: "bad" },
-};
 
 const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: Tone }> = {
   pending: { label: "Draft: not yet reviewed", tone: "warn" },
@@ -203,55 +196,7 @@ function AssessmentView({
         />
       </div>
 
-      <Card
-        title="Evidence readiness"
-        action={<span className="text-2xl font-semibold tabular-nums">{a.readiness.score}/100</span>}
-      >
-        <div className="h-2 overflow-hidden rounded-full bg-line-soft" aria-hidden>
-          <div className="h-full rounded-full bg-brand" style={{ width: `${a.readiness.score}%` }} />
-        </div>
-        <p className="mt-3 text-sm text-ink-soft">
-          How completely the evidence covers each element of the claim. Not a prediction of outcome.
-        </p>
-        {!!a.readiness.excluded_facts && (
-          <p className="mt-2 text-sm text-bad">
-            {a.readiness.excluded_facts} {a.readiness.excluded_facts === 1 ? "fact" : "facts"} left out of
-            the score because the quote was not found in the source.
-          </p>
-        )}
-
-        <ul className="mt-5 divide-y divide-line-soft rounded-md border">
-          {a.readiness.elements.map((el) => {
-            const s = ELEMENT_STATUS[el.status];
-            const Icon = el.status === "supported" ? CircleCheck : CircleAlert;
-            return (
-              <li key={el.element} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                <Icon
-                  size={17}
-                  aria-hidden
-                  className={el.status === "supported" ? "text-ok" : el.status === "weak" ? "text-warn" : "text-bad"}
-                />
-                <span className="flex-1">{ELEMENT_LABELS[el.element]}</span>
-                <span className="text-xs text-ink-soft tabular-nums">
-                  {el.fact_count} {el.fact_count === 1 ? "fact" : "facts"}
-                </span>
-                <Pill tone={s.tone}>{s.label}</Pill>
-              </li>
-            );
-          })}
-        </ul>
-
-        {a.readiness.flags.length > 0 && (
-          <ul className="mt-4 space-y-1.5 rounded-md bg-warn-tint px-4 py-3 text-sm text-warn">
-            {a.readiness.flags.map((f) => (
-              <li key={f} className="flex gap-2">
-                <CircleAlert size={16} className="mt-0.5 shrink-0" aria-hidden />
-                {f}
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      <ReadinessPanel readiness={a.readiness} />
 
       <Card
         title="Extracted facts"

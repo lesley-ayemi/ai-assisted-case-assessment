@@ -36,6 +36,15 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await page.getByRole("button", { name: "Run assessment" }).click();
   await expect(page.getByRole("heading", { name: "Evidence readiness" })).toBeVisible();
   await expect(page.getByText(/^\d{1,3}\/100$/)).toBeVisible();
+
+  // The points per element add up to the score shown
+  const score = Number((await page.getByText(/^\d{1,3}\/100$/).textContent())!.split("/")[0]);
+  const rows = page.getByRole("table").getByRole("row");
+  await expect(rows).toHaveCount(7); // header and six elements
+  const earned = await rows.evaluateAll((trs) =>
+    trs.slice(1).map((tr) => Number(tr.querySelectorAll("td")[2].textContent!.split("/")[0])),
+  );
+  expect(Math.abs(earned.reduce((a, b) => a + b, 0) - score)).toBeLessThanOrEqual(0.5); // score is rounded
   await expect(page.getByText("Draft: not yet reviewed")).toBeVisible();
 
   const facts = page.getByRole("list", { name: "Extracted facts" }).getByRole("listitem");
