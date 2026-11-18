@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { enGB } from "react-day-picker/locale/en-GB";
 import { field } from "@/components/ui";
+import { limitation, longDate, startOfToday } from "@/lib/limitation";
 
 /**
  * A UK-format date field: type DD/MM/YYYY or pick from a calendar. The value is submitted
@@ -15,9 +16,6 @@ import { field } from "@/components/ui";
 const pad = (n: number) => String(n).padStart(2, "0");
 const toISO = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const toDisplay = (d: Date) => `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
-const longDate = (d: Date) =>
-  d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-
 function parse(text: string): Date | null {
   const t = text.trim();
   let y: number, m: number, d: number;
@@ -31,20 +29,10 @@ function parse(text: string): Date | null {
   return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null;
 }
 
-function startOfToday() {
-  const t = new Date();
-  return new Date(t.getFullYear(), t.getMonth(), t.getDate());
-}
-
-/** Six years from the breach for a simple contract (Limitation Act 1980, s.5). */
 function limitationNote(breach: Date) {
-  const expiry = new Date(breach);
-  expiry.setFullYear(expiry.getFullYear() + 6);
-  const today = startOfToday();
-  const soon = new Date(today);
-  soon.setFullYear(soon.getFullYear() + 1);
-  if (expiry < today) return { text: `Limitation period ended on ${longDate(expiry)}`, tone: "text-bad" };
-  if (expiry < soon) return { text: `Limitation period ends soon, on ${longDate(expiry)}`, tone: "text-warn" };
+  const { expiry, status } = limitation(breach);
+  if (status === "expired") return { text: `Limitation period ended on ${longDate(expiry)}`, tone: "text-bad" };
+  if (status === "soon") return { text: `Limitation period ends soon, on ${longDate(expiry)}`, tone: "text-warn" };
   return { text: `Limitation period ends on ${longDate(expiry)}`, tone: "text-ok" };
 }
 

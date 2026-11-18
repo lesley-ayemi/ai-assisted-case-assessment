@@ -13,6 +13,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
+import CaseDetails from "@/components/CaseDetails";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
@@ -35,15 +36,6 @@ const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: 
 
 /** How many extracted facts show before "Show more". */
 const FACTS_PREVIEW = 4;
-
-const longDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-
-function limitationExpiry(breach: string) {
-  const d = new Date(breach);
-  d.setFullYear(d.getFullYear() + 6);
-  return longDate(d.toISOString());
-}
 
 export default function CasePage({ params }: { params: Promise<{ id: string }> }) {
   const caseId = Number(use(params).id);
@@ -121,17 +113,7 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
 
       <div className="grid items-start gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         <div className="space-y-6">
-          <Card title="Case details">
-            <dl className="space-y-3 text-sm">
-              <Detail label="Client" value={c.client_name} />
-              <Detail label="Counterparty" value={c.counterparty} />
-              <Detail label="Date of alleged breach" value={c.breach_date ? longDate(c.breach_date) : "Unknown"} />
-              {c.breach_date && (
-                <Detail label="Limitation period ends" value={limitationExpiry(c.breach_date)} />
-              )}
-              <Detail label="Opened" value={longDate(c.created_at)} />
-            </dl>
-          </Card>
+          <CaseDetails c={c} />
 
           <Card title="Client's account">
             <p className="text-sm leading-relaxed whitespace-pre-wrap">{c.description}</p>
@@ -167,15 +149,6 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-function Detail({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-xs text-ink-soft">{label}</dt>
-      <dd className="mt-0.5 font-medium">{value}</dd>
     </div>
   );
 }

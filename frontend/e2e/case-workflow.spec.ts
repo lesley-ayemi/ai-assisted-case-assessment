@@ -22,6 +22,8 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await expect(page).toHaveURL(/\/cases\/\d+$/);
   await expect(page.getByRole("heading", { name: spec.title })).toBeVisible();
   await expect(page.getByText("None uploaded yet.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Limitation period" })).toBeVisible();
+  await expect(page.getByText(/left to issue a claim|ago$/)).toBeVisible();
 
   // Upload the documents one at a time, waiting for each to be listed
   const fileInput = page.locator('input[type="file"]');
@@ -99,6 +101,7 @@ test("unsupported uploads are rejected with a clear message", async ({ page, req
   const { id } = await res.json();
 
   await page.goto(`/cases/${id}`);
+  await expect(page.getByText("Breach date unknown")).toBeVisible();
   await page.locator('input[type="file"]').setInputFiles({
     name: "photo.png", mimeType: "image/png", buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47]),
   });
