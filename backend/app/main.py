@@ -29,4 +29,5 @@ app.include_router(legislation.router)
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "product": settings.product_name}
+    # extraction tells the UI whether assessments use the model or the keyword stub.
+    return {"status": "ok", "product": settings.product_name, "extraction": settings.llm_provider}

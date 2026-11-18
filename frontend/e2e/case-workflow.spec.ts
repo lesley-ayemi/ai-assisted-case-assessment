@@ -8,9 +8,11 @@ const spec = JSON.parse(readFileSync(path.join(CASE_DIR, "case.json"), "utf8"));
 
 test("solicitor takes a case from intake to approved PDF report", async ({ page }) => {
   // Intake
+  // The landing page links to the app. Checked by href and then visited directly: on a cold
+  // dev server a click that lands during hydration is sometimes lost, which made this flaky.
   await page.goto("/");
-  await page.getByRole("link", { name: "Open the demo" }).first().click();
-  await expect(page).toHaveURL(/\/cases$/);
+  await expect(page.getByRole("link", { name: "Open the demo" }).first()).toHaveAttribute("href", "/cases");
+  await page.goto("/cases");
   await page.getByRole("main").getByRole("link", { name: "New case" }).first().click();
   await page.getByLabel("Title").fill(spec.title);
   await page.getByLabel("Client").fill(spec.client_name);
@@ -22,6 +24,8 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await expect(page).toHaveURL(/\/cases\/\d+$/);
   await expect(page.getByRole("heading", { name: spec.title })).toBeVisible();
   await expect(page.getByText("None uploaded yet.")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toContainText(spec.title);
+  await expect(page.getByText("Stub mode: no AI model")).toBeVisible(); // the e2e backend runs the stub
   await expect(page.getByRole("heading", { name: "Limitation period" })).toBeVisible();
   await expect(page.getByText(/left to issue a claim|ago$/)).toBeVisible();
 

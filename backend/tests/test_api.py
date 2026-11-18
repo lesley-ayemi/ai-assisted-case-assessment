@@ -21,7 +21,9 @@ def make_pdf(text: str) -> bytes:
 
 
 def test_health(client):
-    assert client.get("/health").json()["status"] == "ok"
+    body = client.get("/health").json()
+    assert body["status"] == "ok"
+    assert body["extraction"] == "anthropic"  # pinned in conftest
 
 
 def test_create_and_get_case(client):

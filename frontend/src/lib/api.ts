@@ -127,7 +127,10 @@ const json = (body: unknown): RequestInit => ({
   body: JSON.stringify(body),
 });
 
+export type Health = { status: string; product: string; extraction: "anthropic" | "stub" };
+
 export const api = {
+  health: () => request<Health>("/health"),
   listCases: () => request<Case[]>("/cases"),
   getCase: (id: number) => request<Case>(`/cases/${id}`),
   createCase: (body: CaseCreate) => request<Case>("/cases", json(body)),
