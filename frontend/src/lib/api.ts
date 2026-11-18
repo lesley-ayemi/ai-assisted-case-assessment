@@ -60,6 +60,16 @@ export type ProvisionHit = {
   url: string;
   score: number;
   text: string;
+  /** Query terms (stemmed, after expansion) found in this provision. */
+  matched: string[];
+};
+
+export type QueryExpansion = { matched: string; terms: string };
+
+export type LegislationStats = {
+  provisions: number;
+  acts: string[];
+  sections_per_act: Record<string, number>;
 };
 
 export type Provision = {
@@ -133,6 +143,8 @@ export const api = {
     request<Assessment>(`/cases/${caseId}/assessments`, { method: "POST" }),
   searchLegislation: (q: string, k = 8) =>
     request<ProvisionHit[]>(`/legislation/search?${new URLSearchParams({ q, k: String(k) })}`),
+  expandQuery: (q: string) => request<QueryExpansion[]>(`/legislation/expand?${new URLSearchParams({ q })}`),
+  legislationStats: () => request<LegislationStats>("/legislation/stats"),
   getProvision: (id: string) => request<Provision>(`/legislation/provisions/${id}`),
   review: (caseId: number, assessmentId: number, decision: string, note: string) =>
     request<Assessment>(

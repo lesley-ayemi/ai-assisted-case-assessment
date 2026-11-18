@@ -118,3 +118,13 @@ def test_provision_endpoint(client):
     assert body["citation"] == "Limitation Act 1980, s.5"
     assert "six years" in body["text"]
     assert client.get("/legislation/provisions/ukpga/1980/58/section/999").status_code == 404
+
+
+def test_search_reports_matches_and_expansion(client):
+    hits = client.get("/legislation/search", params={"q": "the worktops arrived cracked"}).json()
+    assert "satisfactori" in hits[0]["matched"] or "quality" in hits[0]["matched"]
+    expansion = client.get("/legislation/expand", params={"q": "the worktops arrived cracked"}).json()
+    assert expansion == [{"matched": "cracked", "terms": "satisfactory quality fitness purpose defects"}]
+    assert client.get("/legislation/expand", params={"q": "hello there"}).json() == []
+    stats = client.get("/legislation/stats").json()
+    assert sum(stats["sections_per_act"].values()) == stats["provisions"]

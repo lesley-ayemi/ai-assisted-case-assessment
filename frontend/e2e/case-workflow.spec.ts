@@ -136,6 +136,18 @@ test("legislation search finds the Late Payment Act for an unpaid invoice", asyn
   await expect(
     page.getByText(/Late Payment of Commercial Debts \(Interest\) Act 1998/).first(),
   ).toBeVisible();
+
+  // The plain-English query is shown widened with statutory terms
+  const expansion = page.getByText("Also searched for statutory terms").locator("..");
+  await expect(expansion).toContainText("qualifying debt");
+
+  // Results can be narrowed to one Act
+  const filter = page.getByRole("button", { name: /^Late Payment of Commercial Debts/ });
+  await filter.click();
+  await expect(filter).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Best match")).toBeVisible();
+  await page.getByRole("button", { name: "Show all Acts" }).click();
+  await expect(filter).toHaveAttribute("aria-pressed", "false");
 });
 
 test("breach date accepts UK dates, rejects impossible ones and flags limitation", async ({ page }) => {

@@ -138,6 +138,12 @@ class ProvisionHit(BaseModel):
     url: str
     score: float
     text: str
+    matched: list[str] = []  # query terms (stemmed, after expansion) found in this provision
+
+
+class QueryExpansion(BaseModel):
+    matched: str  # the everyday phrase found in the query
+    terms: str  # statutory terms it adds to the search
 
 
 class Verification(BaseModel):

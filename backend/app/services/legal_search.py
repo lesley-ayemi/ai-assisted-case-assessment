@@ -71,6 +71,11 @@ def expand_query(query: str) -> str:
     return " ".join([query, *extra])
 
 
+def explain_expansion(query: str) -> list[tuple[str, str]]:
+    """The everyday phrases found in a query and the statutory terms each one adds."""
+    return [(m.group(0), terms) for pattern, terms in EXPANSIONS if (m := pattern.search(query))]
+
+
 @dataclass(frozen=True)
 class Provision:
     id: str
