@@ -4,13 +4,11 @@ import {
   ChevronDown,
   ChevronUp,
   Download,
-  FileCheck2,
   Gauge,
-  ListChecks,
   Play,
-  ShieldCheck,
 } from "lucide-react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
+import AssessmentSummary from "@/components/AssessmentSummary";
 import CaseDetails from "@/components/CaseDetails";
 import ClientAccount from "@/components/ClientAccount";
 import DocumentsPanel from "@/components/DocumentsPanel";
@@ -18,7 +16,7 @@ import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
 import ReadinessPanel from "@/components/ReadinessPanel";
 import ReviewPanel from "@/components/ReviewPanel";
-import { btn, Card, caseStatus, Pill, StatCard, type Tone } from "@/components/ui";
+import { btn, Card, caseStatus, Pill, type Tone } from "@/components/ui";
 import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
 const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: Tone }> = {
@@ -164,8 +162,6 @@ function AssessmentView({
   const factsTop = useRef<HTMLDivElement>(null);
   const hiddenFacts = facts.slice(FACTS_PREVIEW);
   const hiddenUnverified = hiddenFacts.filter((f) => unverified.has(f.source.quote)).length;
-  const verifiedCount = facts.filter((f) => !unverified.has(f.source.quote)).length;
-  const supported = a.readiness.elements.filter((e) => e.status === "supported").length;
   const review = REVIEW_STATUS[a.review_status];
 
   return (
@@ -186,15 +182,7 @@ function AssessmentView({
         </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard icon={ListChecks} label="Elements supported" value={`${supported} of ${a.readiness.elements.length}`} />
-        <StatCard icon={FileCheck2} label="Facts extracted" value={facts.length} />
-        <StatCard
-          icon={ShieldCheck}
-          label="Quotes found in source"
-          value={`${verifiedCount} of ${facts.length}`}
-        />
-      </div>
+      <AssessmentSummary assessment={a} />
 
       <ReadinessPanel readiness={a.readiness} />
 
