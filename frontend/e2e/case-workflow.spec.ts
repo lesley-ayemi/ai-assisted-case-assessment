@@ -27,7 +27,7 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   const fileInput = page.locator('input[type="file"]');
   for (const name of spec.documents as string[]) {
     await fileInput.setInputFiles(path.join(CASE_DIR, name));
-    await expect(page.getByRole("listitem").filter({ hasText: name })).toBeVisible();
+    await expect(page.getByRole("list", { name: "Documents" }).getByText(name)).toBeVisible();
   }
 
   // Assessment
@@ -117,4 +117,28 @@ test("breach date accepts UK dates, rejects impossible ones and flags limitation
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Clear" }).click();
   await expect(date).toHaveValue("");
+});
+
+test("several documents upload at once, and a bad one doesn't stop the rest", async ({ page, request }) => {
+  const res = await request.post("http://localhost:8010/cases", {
+    data: {
+      title: "Batch upload", client_name: "A Ltd", counterparty: "B Ltd",
+      description: "Test case for batch upload.", breach_date: null,
+    },
+  });
+  const { id } = await res.json();
+
+  await page.goto(`/cases/${id}`);
+  await page.getByLabel("Upload documents").setInputFiles([
+    ...(spec.documents as string[]).map((name) => ({
+      name, mimeType: "text/plain", buffer: readFileSync(path.join(CASE_DIR, name)),
+    })),
+    { name: "photo.png", mimeType: "image/png", buffer: Buffer.from([0x89, 0x50, 0x4e, 0x47]) },
+  ]);
+
+  const docs = page.getByRole("list", { name: "Documents" });
+  for (const name of spec.documents as string[]) await expect(docs.getByText(name)).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: "isn't supported" })).toBeVisible();
+  await page.getByRole("button", { name: "Dismiss photo.png" }).click();
+  await expect(page.getByRole("alert").filter({ hasText: "isn't supported" })).toHaveCount(0);
 });

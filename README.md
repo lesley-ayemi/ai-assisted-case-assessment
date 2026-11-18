@@ -122,13 +122,11 @@ backend/.venv/bin/python evals/run_evals.py                     # full pipeline;
 cd frontend && npx playwright install chromium && npm run test:e2e   # browser end-to-end test
 ```
 
-Stop `npm run dev` before running the end-to-end test: it starts its own servers, and two Next.js dev servers in the same folder can clash.
-
 ### End-to-end test
 
 `frontend/e2e/case-workflow.spec.ts` drives the app in Chromium the way a solicitor would: create a case, upload the three documents from eval case 04, run the assessment, check that facts and statutory citations are marked verified and that Limitation Act s.5 is applied by rule, download the PDF report, approve it with amendments, and confirm the case list shows it as reviewed. Two smaller tests cover rejected uploads and legislation search.
 
-Playwright starts its own backend (fresh SQLite database, port 8010) and frontend (port 3010), so it doesn't touch your dev data. The backend runs with `LLM_PROVIDER=stub`, a deterministic keyword extractor that quotes lines of the documents verbatim, so the test needs no API key and gives the same result every run. The stub does no real analysis: it tests the workflow, and the evals test the model. Assessments it produces are recorded with the model `stub`.
+Playwright starts its own backend (fresh SQLite database, port 8010) and frontend (port 3010, built into `.next-e2e`), so it doesn't touch your dev data and can run while `npm run dev` is running. The backend runs with `LLM_PROVIDER=stub`, a deterministic keyword extractor that quotes lines of the documents verbatim, so the test needs no API key and gives the same result every run. The stub does no real analysis: it tests the workflow, and the evals test the model. Assessments it produces are recorded with the model `stub`.
 
 The full eval checks, per case: every quote is traceable to its source, every statutory citation is verified, the expected claim elements are found or correctly marked missing, key facts are mentioned, limitation flags fire, expected provisions are cited, and the readiness score falls in the hand-labelled range.
 

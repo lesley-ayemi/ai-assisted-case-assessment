@@ -53,7 +53,7 @@ export function StatCard({
         </span>
         <p className="text-sm text-ink-soft">{label}</p>
       </div>
-      <p className="mt-3 text-2xl font-semibold tabular-nums">{value}</p>
+      <p className="mt-3 text-2xl font-semibold whitespace-nowrap tabular-nums">{value}</p>
       {note && <p className="mt-1 text-xs text-ink-soft">{note}</p>}
     </div>
   );

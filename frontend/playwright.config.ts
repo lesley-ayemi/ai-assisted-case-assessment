@@ -33,7 +33,7 @@ export default defineConfig({
     {
       command: `npx next dev --port ${WEB_PORT}`,
       url: `http://localhost:${WEB_PORT}`,
-      env: { NEXT_PUBLIC_API_URL: `http://localhost:${API_PORT}` },
+      env: { NEXT_PUBLIC_API_URL: `http://localhost:${API_PORT}`, NEXT_DIST_DIR: ".next-e2e" },
       reuseExistingServer: false,
       timeout: 120_000,
     },

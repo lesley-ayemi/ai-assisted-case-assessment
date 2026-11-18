@@ -5,14 +5,13 @@ import {
   CircleCheck,
   Download,
   FileCheck2,
-  FileText,
   Gauge,
   ListChecks,
   Play,
   ShieldCheck,
-  Upload,
 } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
+import DocumentUpload from "@/components/DocumentUpload";
 import { btn, Card, caseStatus, field, Pill, StatCard, type Tone } from "@/components/ui";
 import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
@@ -131,36 +130,24 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
           </Card>
 
           <Card title="Documents" action={<span className="text-xs text-ink-soft">{c.documents.length}</span>}>
-            <ul className="space-y-2 text-sm">
+            <ul aria-label="Documents" className="mb-4 divide-y divide-line-soft text-sm">
               {c.documents.map((d) => (
-                <li key={d.id} className="flex items-center gap-2.5">
-                  <FileText size={16} className="shrink-0 text-ink-faint" aria-hidden />
+                <li key={d.id} className="flex items-center gap-3 py-2 first:pt-0">
+                  <FileBadge filename={d.filename} />
                   <span className="min-w-0 flex-1 truncate">{d.filename}</span>
                   <span className="text-xs text-ink-faint">
                     {d.page_count} {d.page_count === 1 ? "page" : "pages"}
                   </span>
                 </li>
               ))}
-              {c.documents.length === 0 && <li className="text-ink-soft">None uploaded yet.</li>}
+              {c.documents.length === 0 && <li className="pb-1 text-ink-soft">None uploaded yet.</li>}
             </ul>
-            <label
-              className={`${btn.secondary} mt-4 w-full cursor-pointer has-[:disabled]:cursor-wait has-[:disabled]:opacity-60`}
-            >
-              <Upload size={15} aria-hidden />
-              {busy === "upload" ? "Uploading…" : "Upload document"}
-              <input
-                type="file"
-                accept=".pdf,.txt,.md,.eml"
-                disabled={!!busy}
-                className="sr-only"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) run("upload", () => api.uploadDocument(caseId, file));
-                  e.target.value = "";
-                }}
-              />
-            </label>
-            <p className="mt-2 text-center text-xs text-ink-faint">PDF, text or email files</p>
+            <DocumentUpload
+              caseId={caseId}
+              disabled={!!busy && busy !== "upload"}
+              onUploaded={load}
+              onBusyChange={(b) => setBusy(b ? "upload" : null)}
+            />
           </Card>
         </div>
 
@@ -185,6 +172,16 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
         </div>
       </div>
     </div>
+  );
+}
+
+function FileBadge({ filename }: { filename: string }) {
+  const ext = filename.includes(".") ? filename.split(".").pop()!.toUpperCase().slice(0, 4) : "FILE";
+  const tone = ext === "PDF" ? "bg-bad-tint text-bad" : ext === "EML" ? "bg-brand-tint text-brand" : "bg-line-soft text-ink-soft";
+  return (
+    <span className={`grid h-7 w-9 shrink-0 place-items-center rounded text-[10px] font-semibold ${tone}`} aria-hidden>
+      {ext}
+    </span>
   );
 }
 
