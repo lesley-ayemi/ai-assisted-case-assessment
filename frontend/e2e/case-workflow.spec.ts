@@ -94,3 +94,27 @@ test("legislation search finds the Late Payment Act for an unpaid invoice", asyn
     page.getByText(/Late Payment of Commercial Debts \(Interest\) Act 1998/).first(),
   ).toBeVisible();
 });
+
+test("breach date accepts UK dates, rejects impossible ones and flags limitation", async ({ page }) => {
+  await page.goto("/cases/new");
+  const date = page.getByLabel("Date of alleged breach");
+
+  await date.fill("31/02/2025");
+  await expect(page.getByText("Enter a date like 12/09/2025")).toBeVisible();
+  await page.getByLabel("Title").fill("Date check");
+  await page.getByLabel("Client", { exact: true }).fill("A Ltd");
+  await page.getByLabel("Counterparty").fill("B Ltd");
+  await page.getByLabel("What happened?").fill("Testing the date field.");
+  await page.getByRole("button", { name: "Create case" }).click();
+  await expect(page).toHaveURL(/\/cases\/new$/); // invalid date blocks submission
+
+  await date.fill("1/3/2019");
+  await date.blur();
+  await expect(date).toHaveValue("01/03/2019");
+  await expect(page.getByText("Limitation period ended on 1 March 2025")).toBeVisible();
+
+  await page.getByRole("button", { name: "Choose date from calendar" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("button", { name: "Clear" }).click();
+  await expect(date).toHaveValue("");
+});

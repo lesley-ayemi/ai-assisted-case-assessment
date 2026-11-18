@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-day-picker/style.css";
 
 /*
   Design tokens. Deep green ink and a highlighter yellow-green: the highlighter marks text
@@ -55,6 +56,42 @@
     padding: 0 2px;
     border-radius: 2px;
   }
+}
+
+/* Calendar (react-day-picker), themed to the tokens above. */
+.rdp-root {
+  --rdp-accent-color: var(--color-brand);
+  --rdp-accent-background-color: var(--color-brand-tint);
+  --rdp-day-height: 36px;
+  --rdp-day-width: 36px;
+  --rdp-selected-border: none;
+  --rdp-nav-height: 2.25rem;
+  font-size: 0.875rem;
+}
+.rdp-caption_label,
+.rdp-dropdown_root {
+  font-weight: 500;
+}
+.rdp-weekday {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-ink-soft);
+}
+.rdp-day_button {
+  border-radius: 6px;
+}
+.rdp-day:not(.rdp-disabled):not(.rdp-selected) .rdp-day_button:hover {
+  background: var(--color-canvas);
+}
+.rdp-selected .rdp-day_button {
+  background: var(--color-brand);
+  color: #fff;
+  font-weight: 500;
+}
+.rdp-today:not(.rdp-selected) .rdp-day_button {
+  color: var(--color-brand);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px var(--color-line);
 }
 
 @media (prefers-reduced-motion: reduce) {

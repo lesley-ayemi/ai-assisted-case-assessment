@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { cloneElement, useId, useState } from "react";
+import DateField from "@/components/DateField";
 import { btn, field } from "@/components/ui";
 import { api } from "@/lib/api";
 
@@ -76,7 +77,7 @@ export default function NewCase() {
             </Field>
           </div>
           <Field label="Date of alleged breach" hint="Used to check the limitation period. Leave blank if unknown.">
-            <input name="breach_date" type="date" className={`${field} sm:w-56`} />
+            <DateField name="breach_date" />
           </Field>
           <Field label="What happened?" hint="The client's account, in their own words.">
             <textarea name="description" required rows={7} className={field} />
