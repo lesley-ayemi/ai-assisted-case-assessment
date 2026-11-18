@@ -21,6 +21,9 @@ WEIGHTS: dict[Element, float] = {
 # One supporting fact counts as "weak"; two or more independent ones as "supported".
 SUPPORTED_THRESHOLD = 2
 
+# Share of an element's weight each status earns.
+CREDIT = {"supported": 1.0, "weak": 0.5, "missing": 0.0}
+
 # Limitation Act 1980 s.5: six years from breach for simple contracts.
 LIMITATION_PROVISION_ID = "ukpga/1980/58/section/5"
 LIMITATION_CITATION = "Limitation Act 1980, s.5"
@@ -77,13 +80,8 @@ def score_readiness(
     total = 0.0
     for element, weight in WEIGHTS.items():
         n = counts[element]
-        if n >= SUPPORTED_THRESHOLD:
-            status, credit = "supported", 1.0
-        elif n == 1:
-            status, credit = "weak", 0.5
-        else:
-            status, credit = "missing", 0.0
-        total += weight * credit
+        status = "supported" if n >= SUPPORTED_THRESHOLD else "weak" if n == 1 else "missing"
+        total += weight * CREDIT[status]
         elements.append(ElementScore(element=element, status=status, fact_count=n, weight=weight))
 
     return ReadinessReport(

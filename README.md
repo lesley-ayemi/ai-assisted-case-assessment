@@ -44,7 +44,7 @@ Retrieval sits behind a `Retriever` interface, so vector or hybrid search (for e
 
 ### PDF report
 
-Each assessment exports as an A4 PDF for the solicitor's file (`GET /cases/{id}/assessments/{id}/report.pdf`, or **Download PDF report** on the case page). It shows the review status prominently (a draft can't pass as approved), the readiness breakdown and flags, every fact and citation marked verified or not, the questions for the solicitor, the review record, and the provisions considered with Open Government Licence attribution.
+Each assessment exports as an A4 PDF for the solicitor's file (`GET /cases/{id}/assessments/{id}/report.pdf`, or **Download PDF report** on the case page). It shows the review status prominently (a draft can't pass as approved, and every page after the first repeats it), four headline figures, the limitation deadline and time left, the readiness breakdown with points that add up to the score, every fact and citation marked verified or not, the questions for the solicitor, the review record (with sign-off lines while still a draft), and the provisions considered with Open Government Licence attribution.
 
 See [`docs/sample-report.pdf`](docs/sample-report.pdf). It is illustrative: the facts were written by hand for eval case 04, not produced by the model. One deliberately fabricated quote shows how an unverified fact is flagged and left out of the score (Causation stays "missing").
 
