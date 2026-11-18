@@ -112,11 +112,22 @@ export type Assessment = {
   reviewed_at: string | null;
 };
 
+/** An error response from the API, with its HTTP status (404 for a missing case, say). */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, { cache: "no-store", ...init });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.detail ?? `Request failed (${res.status})`);
+    throw new ApiError(body.detail ?? `Request failed (${res.status})`, res.status);
   }
   return res.json();
 }

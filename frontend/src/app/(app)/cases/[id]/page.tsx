@@ -13,11 +13,12 @@ import CaseDetails from "@/components/CaseDetails";
 import ClientAccount from "@/components/ClientAccount";
 import DocumentsPanel from "@/components/DocumentsPanel";
 import LegislationPanel from "@/components/LegislationPanel";
+import NotFoundPanel from "@/components/NotFoundPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
 import ReadinessPanel from "@/components/ReadinessPanel";
 import ReviewPanel from "@/components/ReviewPanel";
 import { btn, Card, caseStatus, Pill, type Tone } from "@/components/ui";
-import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
+import { api, ApiError, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
 const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: Tone }> = {
   pending: { label: "Draft: not yet reviewed", tone: "warn" },
@@ -35,6 +36,7 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
   const [assessments, setAssessments] = useState<Assessment[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -42,13 +44,15 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
       setCase(cs);
       setAssessments(as);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Couldn't load the case");
+      if (e instanceof ApiError && (e.status === 404 || e.status === 422)) setNotFound(true);
+      else setError(e instanceof Error ? e.message : "Couldn't load the case");
     }
   }, [caseId]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    if (Number.isInteger(caseId) && caseId > 0) load();
+    else setNotFound(true);
+  }, [caseId, load]);
 
   async function run(label: string, fn: () => Promise<unknown>) {
     setBusy(label);
@@ -63,7 +67,29 @@ export default function CasePage({ params }: { params: Promise<{ id: string }> }
     }
   }
 
-  if (!c) return <p className="text-ink-soft">{error ?? "Loading…"}</p>;
+  if (notFound)
+    return (
+      <NotFoundPanel
+        title="This case doesn't exist"
+        body={
+          <p>
+            There&apos;s no case at this address. The link may be wrong, or the demo database may have been
+            reset.
+          </p>
+        }
+      />
+    );
+  if (!c && error)
+    return (
+      <div role="alert" className="mx-auto max-w-md rounded-lg border bg-white px-6 py-8 text-center">
+        <p className="font-medium">Couldn&apos;t load this case</p>
+        <p className="mt-1 text-sm text-ink-soft">{error}. Check the backend is running, then try again.</p>
+        <button onClick={() => load()} className={`${btn.secondary} mt-4`}>
+          Try again
+        </button>
+      </div>
+    );
+  if (!c) return <p className="text-sm text-ink-soft">Loading case…</p>;
   const latest = assessments.at(-1);
   const status = caseStatus(c.status);
 

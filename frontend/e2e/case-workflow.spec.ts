@@ -236,3 +236,14 @@ test("the sample case fills the form and creates a case", async ({ page }) => {
   await expect(page).toHaveURL(/\/cases\/\d+$/);
   await expect(page.getByRole("heading", { name: spec.title })).toBeVisible();
 });
+
+test("unknown pages and missing cases show a helpful not-found page", async ({ page }) => {
+  const res = await page.goto("/no-such-page");
+  expect(res?.status()).toBe(404);
+  await expect(page.getByRole("heading", { name: "This page isn't in the file" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Go to cases" })).toHaveAttribute("href", "/cases");
+
+  await page.goto("/cases/99999");
+  await expect(page.getByRole("heading", { name: "This case doesn't exist" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Main" })).toBeVisible(); // still inside the app
+});
