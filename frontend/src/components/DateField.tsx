@@ -40,12 +40,18 @@ export default function DateField({
   name,
   id,
   "aria-describedby": describedBy,
+  defaultValue,
 }: {
+  /** Initial value as an ISO date (YYYY-MM-DD). */
+  defaultValue?: string;
   name: string;
   id?: string;
   "aria-describedby"?: string;
 }) {
-  const [text, setText] = useState("");
+  const [text, setText] = useState(() => {
+    const d = defaultValue ? parse(defaultValue) : null;
+    return d ? toDisplay(d) : "";
+  });
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState<Date>(startOfToday());
   const wrapper = useRef<HTMLDivElement>(null);

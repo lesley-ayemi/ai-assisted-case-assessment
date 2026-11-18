@@ -91,7 +91,7 @@ Open http://localhost:3000 for the landing page, and click **Open the demo** for
 
 The 20 fictional cases in `evals/cases/` make ready-made test data: each folder has a `case.json` (title, parties, breach date, description) and the documents to upload.
 
-1. **Create a case:** click **New case** and copy the details from `evals/cases/04-defective-worktops/case.json`.
+1. **Create a case:** click **New case**, then **Use sample case** to fill in the details from `evals/cases/04-defective-worktops/case.json` (or type them yourself).
 2. **Upload documents:** upload the three `.txt` files from that folder, one at a time.
 3. **Run the assessment.** Check:
    - the readiness score and the six claim elements

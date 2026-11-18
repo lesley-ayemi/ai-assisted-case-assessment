@@ -209,3 +209,14 @@ test("questions for the solicitor can be ticked off and stay ticked", async ({ p
   await page.reload();
   await expect(page.getByRole("list", { name: "Questions for the solicitor" }).getByRole("checkbox").first()).toBeChecked();
 });
+
+test("the sample case fills the form and creates a case", async ({ page }) => {
+  await page.goto("/cases/new");
+  await page.getByRole("button", { name: "Use sample case" }).click();
+  await expect(page.getByLabel("Title")).toHaveValue(spec.title);
+  await expect(page.getByLabel("Date of alleged breach")).toHaveValue("12/09/2025");
+  await expect(page.getByText("Limitation period ends on 12 September 2031")).toBeVisible();
+  await page.getByRole("button", { name: "Create case" }).click();
+  await expect(page).toHaveURL(/\/cases\/\d+$/);
+  await expect(page.getByRole("heading", { name: spec.title })).toBeVisible();
+});
