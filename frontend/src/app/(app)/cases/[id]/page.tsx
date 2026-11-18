@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  ChevronDown,
+  ChevronUp,
   CircleAlert,
   CircleCheck,
   Download,
@@ -10,7 +12,7 @@ import {
   Play,
   ShieldCheck,
 } from "lucide-react";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
 import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
@@ -30,6 +32,9 @@ const REVIEW_STATUS: Record<Assessment["review_status"], { label: string; tone: 
   amended: { label: "Approved with amendments", tone: "ok" },
   rejected: { label: "Rejected", tone: "bad" },
 };
+
+/** How many extracted facts show before "Show more". */
+const FACTS_PREVIEW = 4;
 
 const longDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
@@ -212,6 +217,10 @@ function AssessmentView({
     id === 0 ? "Client's account" : (caseDocs.find((d) => d.id === id)?.filename ?? `Document ${id}`);
   const unverified = new Set(a.verification.unverified_quotes);
   const facts = a.facts.facts;
+  const [showAllFacts, setShowAllFacts] = useState(false);
+  const factsTop = useRef<HTMLDivElement>(null);
+  const hiddenFacts = facts.slice(FACTS_PREVIEW);
+  const hiddenUnverified = hiddenFacts.filter((f) => unverified.has(f.source.quote)).length;
   const verifiedCount = facts.filter((f) => !unverified.has(f.source.quote)).length;
   const supported = a.readiness.elements.filter((e) => e.status === "supported").length;
   const review = REVIEW_STATUS[a.review_status];
@@ -294,9 +303,13 @@ function AssessmentView({
         )}
       </Card>
 
-      <Card title="Extracted facts">
+      <Card
+        title="Extracted facts"
+        action={<span className="text-xs text-ink-soft">{facts.length} {facts.length === 1 ? "fact" : "facts"}</span>}
+      >
+        <div ref={factsTop} className="scroll-mt-20" />
         <ul aria-label="Extracted facts" className="-my-1 divide-y divide-line-soft">
-          {facts.map((f, i) => {
+          {(showAllFacts ? facts : facts.slice(0, FACTS_PREVIEW)).map((f, i) => {
             const found = !unverified.has(f.source.quote);
             return (
               <li key={i} className="py-4 first:pt-1 last:pb-1">
@@ -315,6 +328,32 @@ function AssessmentView({
             );
           })}
         </ul>
+        {hiddenFacts.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              if (showAllFacts) factsTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+              setShowAllFacts(!showAllFacts);
+            }}
+            aria-expanded={showAllFacts}
+            className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-md border border-dashed py-2 text-sm text-ink-soft hover:border-ink-faint hover:bg-canvas hover:text-ink"
+          >
+            {showAllFacts ? (
+              <>
+                Show fewer
+                <ChevronUp size={15} aria-hidden />
+              </>
+            ) : (
+              <>
+                Show {hiddenFacts.length} more {hiddenFacts.length === 1 ? "fact" : "facts"}
+                {hiddenUnverified > 0 && (
+                  <span className="text-bad">({hiddenUnverified} with a quote not found)</span>
+                )}
+                <ChevronDown size={15} aria-hidden />
+              </>
+            )}
+          </button>
+        )}
       </Card>
 
       <LegislationPanel assessment={a} />

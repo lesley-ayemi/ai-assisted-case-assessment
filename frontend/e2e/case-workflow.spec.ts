@@ -38,7 +38,11 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
 
   const facts = page.getByRole("list", { name: "Extracted facts" }).getByRole("listitem");
   await expect(facts.first()).toBeVisible();
+  expect(await facts.count()).toBe(4); // the rest are behind "Show more"
+  await page.getByRole("button", { name: /^Show \d+ more facts?/ }).click();
   expect(await facts.count()).toBeGreaterThanOrEqual(6);
+  await page.getByRole("button", { name: "Show fewer" }).click();
+  expect(await facts.count()).toBe(4);
   await expect(page.getByText("quote not found in source")).toHaveCount(0);
 
   // Retrieved legislation is cited and verified against the statute text
