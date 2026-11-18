@@ -102,6 +102,14 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Cases" }).click();
   const row = page.getByRole("row").filter({ hasText: spec.title });
   await expect(row).toContainText("Reviewed");
+
+  // The stage strip filters the list
+  const stages = page.getByRole("navigation", { name: "Filter cases by stage" });
+  await stages.getByRole("link", { name: /^Reviewed/ }).click();
+  await expect(page).toHaveURL(/status=reviewed/);
+  await expect(page.getByRole("row").filter({ hasText: spec.title })).toBeVisible();
+  await stages.getByRole("link", { name: /^Intake/ }).click();
+  await expect(page.getByRole("row").filter({ hasText: spec.title })).toHaveCount(0);
 });
 
 test("unsupported uploads are rejected with a clear message", async ({ page, request }) => {

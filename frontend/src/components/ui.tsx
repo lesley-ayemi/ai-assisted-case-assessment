@@ -1,5 +1,3 @@
-import type { LucideIcon } from "lucide-react";
-
 export const btn = {
   primary:
     "inline-flex items-center justify-center gap-2 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover disabled:opacity-60",
@@ -31,31 +29,6 @@ export function Card({
       )}
       <div className="p-5">{children}</div>
     </section>
-  );
-}
-
-export function StatCard({
-  icon: Icon,
-  label,
-  value,
-  note,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: React.ReactNode;
-  note?: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-lg border bg-white p-4">
-      <div className="flex items-center gap-3">
-        <span className="grid size-9 place-items-center rounded-md bg-brand-tint text-brand">
-          <Icon size={18} aria-hidden />
-        </span>
-        <p className="text-sm text-ink-soft">{label}</p>
-      </div>
-      <p className="mt-3 text-2xl font-semibold whitespace-nowrap tabular-nums">{value}</p>
-      {note && <p className="mt-1 text-xs text-ink-soft">{note}</p>}
-    </div>
   );
 }
 
