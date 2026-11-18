@@ -59,7 +59,13 @@ test("solicitor takes a case from intake to approved PDF report", async ({ page 
   expect(pdf.subarray(0, 5).toString()).toBe("%PDF-");
 
   // Solicitor review closes the loop
-  await page.getByPlaceholder("Review note (optional)").fill("Causation needs client instructions.");
+  await page.getByRole("button", { name: "Record decision" }).click();
+  await expect(page.getByText("Choose a decision first.")).toBeVisible();
+  await page.locator("label").filter({ hasText: "Broadly right" }).click(); // the option card
+  await expect(page.getByRole("radio", { name: /Approve with amendments/ })).toBeChecked();
+  await page.getByRole("button", { name: "Approve with amendments" }).click();
+  await expect(page.getByText("Add a note saying what needs correcting.")).toBeVisible();
+  await page.getByLabel("Review note").fill("Causation needs client instructions.");
   await page.getByRole("button", { name: "Approve with amendments" }).click();
   await expect(page.getByText("“Causation needs client instructions.”")).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve with amendments" })).toHaveCount(0);

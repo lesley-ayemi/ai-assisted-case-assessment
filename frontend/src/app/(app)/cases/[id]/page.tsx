@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
-import { btn, Card, caseStatus, field, Pill, StatCard, type Tone } from "@/components/ui";
+import ReviewPanel from "@/components/ReviewPanel";
+import { btn, Card, caseStatus, Pill, StatCard, type Tone } from "@/components/ui";
 import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
 
 const ELEMENT_STATUS: Record<string, { label: string; tone: Tone }> = {
@@ -402,66 +403,6 @@ function LegislationPanel({ assessment }: { assessment: Assessment }) {
         </ul>
         <p className="mt-3 text-xs text-ink-faint">Source: legislation.gov.uk, Open Government Licence v3.0.</p>
       </details>
-    </Card>
-  );
-}
-
-function ReviewPanel({
-  assessment,
-  disabled,
-  onReview,
-}: {
-  assessment: Assessment;
-  disabled: boolean;
-  onReview: (decision: string, note: string) => void;
-}) {
-  const [note, setNote] = useState("");
-
-  if (assessment.review_status !== "pending") {
-    const r = REVIEW_STATUS[assessment.review_status];
-    return (
-      <Card title="Solicitor review">
-        <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Pill tone={r.tone}>{r.label}</Pill>
-          {assessment.reviewed_at && (
-            <span className="text-ink-soft">
-              on {new Date(assessment.reviewed_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}
-            </span>
-          )}
-        </div>
-        {assessment.reviewer_note && <p className="mt-3 text-sm">“{assessment.reviewer_note}”</p>}
-      </Card>
-    );
-  }
-
-  return (
-    <Card title="Solicitor review">
-      <p className="text-sm text-ink-soft">
-        Record your decision. The assessment stays a draft, and the PDF says so, until you do.
-      </p>
-      <textarea
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Review note (optional)"
-        aria-label="Review note"
-        rows={3}
-        className={`${field} mt-3`}
-      />
-      <div className="mt-3 flex flex-wrap gap-2">
-        <button disabled={disabled} onClick={() => onReview("approved", note)} className={btn.primary}>
-          Approve
-        </button>
-        <button disabled={disabled} onClick={() => onReview("amended", note)} className={btn.secondary}>
-          Approve with amendments
-        </button>
-        <button
-          disabled={disabled}
-          onClick={() => onReview("rejected", note)}
-          className={`${btn.secondary} text-bad hover:bg-bad-tint`}
-        >
-          Reject
-        </button>
-      </div>
     </Card>
   );
 }
