@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
+import QuestionsPanel from "@/components/QuestionsPanel";
 import ReviewPanel from "@/components/ReviewPanel";
 import { btn, Card, caseStatus, Pill, StatCard, type Tone } from "@/components/ui";
 import { api, ELEMENT_LABELS, reportUrl, type Assessment, type Case } from "@/lib/api";
@@ -318,13 +319,7 @@ function AssessmentView({
       <LegislationPanel assessment={a} />
 
       {a.facts.open_questions.length > 0 && (
-        <Card title="Questions for the solicitor">
-          <ul className="list-disc space-y-1.5 pl-5 text-sm leading-relaxed">
-            {a.facts.open_questions.map((q) => (
-              <li key={q}>{q}</li>
-            ))}
-          </ul>
-        </Card>
+        <QuestionsPanel assessmentId={a.id} questions={a.facts.open_questions} />
       )}
 
       <ReviewPanel assessment={a} disabled={busy} onReview={onReview} />

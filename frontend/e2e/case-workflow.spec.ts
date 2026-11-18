@@ -148,3 +148,27 @@ test("several documents upload at once, and a bad one doesn't stop the rest", as
   await page.getByRole("button", { name: "Dismiss photo.png" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "isn't supported" })).toHaveCount(0);
 });
+
+test("questions for the solicitor can be ticked off and stay ticked", async ({ page, request }) => {
+  const res = await request.post("http://localhost:8010/cases", {
+    data: {
+      title: "Questions check", client_name: "A Ltd", counterparty: "B Ltd",
+      description: "They did not pay for the work we did.", breach_date: null,
+    },
+  });
+  const { id } = await res.json();
+  await request.post(`http://localhost:8010/cases/${id}/assessments`);
+
+  await page.goto(`/cases/${id}`);
+  const list = page.getByRole("list", { name: "Questions for the solicitor" });
+  const total = await list.getByRole("listitem").count();
+  expect(total).toBeGreaterThan(1);
+  await expect(page.getByText(`${total} open`)).toBeVisible();
+
+  await list.getByRole("listitem").first().click();
+  await expect(list.getByRole("checkbox").first()).toBeChecked();
+  await expect(page.getByText(`${total - 1} open`)).toBeVisible();
+
+  await page.reload();
+  await expect(page.getByRole("list", { name: "Questions for the solicitor" }).getByRole("checkbox").first()).toBeChecked();
+});
