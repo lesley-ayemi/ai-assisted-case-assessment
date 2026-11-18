@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 
-from app.schemas import ProvisionHit
-from app.services.legal_search import default_retriever, load_provisions
+from app.schemas import ProvisionHit, ProvisionOut
+from app.services.legal_search import default_retriever, get_provision, load_provisions
 
 router = APIRouter(prefix="/legislation", tags=["legislation"])
 
@@ -29,3 +29,14 @@ def stats():
         "acts": sorted({p.act for p in provisions}),
         "source": "legislation.gov.uk (Open Government Licence v3.0)",
     }
+
+
+@router.get("/provisions/{provision_id:path}", response_model=ProvisionOut)
+def provision(provision_id: str):
+    """One provision's full text, by ID (for example ukpga/1979/54/section/14)."""
+    p = get_provision(provision_id)
+    if p is None:
+        raise HTTPException(404, "Provision not found")
+    return ProvisionOut(
+        id=p.id, act=p.act, section=p.section, citation=p.citation, title=p.title, url=p.url, text=p.text
+    )

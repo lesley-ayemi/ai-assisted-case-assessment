@@ -62,6 +62,16 @@ export type ProvisionHit = {
   text: string;
 };
 
+export type Provision = {
+  id: string;
+  act: string;
+  section: string;
+  citation: string;
+  title: string;
+  url: string;
+  text: string;
+};
+
 export type Assessment = {
   id: number;
   case_id: number;
@@ -121,6 +131,7 @@ export const api = {
     request<Assessment>(`/cases/${caseId}/assessments`, { method: "POST" }),
   searchLegislation: (q: string, k = 8) =>
     request<ProvisionHit[]>(`/legislation/search?${new URLSearchParams({ q, k: String(k) })}`),
+  getProvision: (id: string) => request<Provision>(`/legislation/provisions/${id}`),
   review: (caseId: number, assessmentId: number, decision: string, note: string) =>
     request<Assessment>(
       `/cases/${caseId}/assessments/${assessmentId}/review`,

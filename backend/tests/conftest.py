@@ -1,6 +1,9 @@
 import os
 
 os.environ["DATABASE_URL"] = "sqlite://"
+# Tests patch the Anthropic extractor themselves; don't let a developer's .env
+# (for example LLM_PROVIDER=stub for keyless local runs) switch it out.
+os.environ["LLM_PROVIDER"] = "anthropic"
 
 import pytest
 from fastapi.testclient import TestClient

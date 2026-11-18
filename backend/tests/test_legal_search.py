@@ -109,3 +109,12 @@ def test_search_endpoint(client):
     assert {"id", "citation", "title", "url", "score", "text"} <= hits[0].keys()
     assert client.get("/legislation/search", params={"q": "x"}).status_code == 422
     assert client.get("/legislation/stats").json()["provisions"] >= 50
+
+
+def test_provision_endpoint(client):
+    r = client.get("/legislation/provisions/ukpga/1980/58/section/5")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["citation"] == "Limitation Act 1980, s.5"
+    assert "six years" in body["text"]
+    assert client.get("/legislation/provisions/ukpga/1980/58/section/999").status_code == 404

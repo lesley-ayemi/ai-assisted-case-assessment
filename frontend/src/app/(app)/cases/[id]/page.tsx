@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { use, useCallback, useEffect, useState } from "react";
 import DocumentUpload from "@/components/DocumentUpload";
+import LegislationPanel from "@/components/LegislationPanel";
 import QuestionsPanel from "@/components/QuestionsPanel";
 import ReviewPanel from "@/components/ReviewPanel";
 import { btn, Card, caseStatus, Pill, StatCard, type Tone } from "@/components/ui";
@@ -332,72 +333,5 @@ function UnverifiedBadge() {
     <span className="ml-2 rounded bg-bad-tint px-1.5 py-0.5 text-[11px] font-medium text-bad">
       quote not found in source
     </span>
-  );
-}
-
-function LegislationPanel({ assessment }: { assessment: Assessment }) {
-  const { legal_issues } = assessment.facts;
-  const { unverified_citations } = assessment.verification;
-  const byId = new Map(assessment.sources.map((s) => [s.id, s]));
-
-  return (
-    <Card title="Relevant legislation">
-      {legal_issues.length === 0 && (
-        <p className="text-sm text-ink-soft">No retrieved provision was judged relevant.</p>
-      )}
-      <ul className="-my-1 divide-y divide-line-soft">
-        {legal_issues.map((issue, i) => {
-          const source = byId.get(issue.provision_id);
-          const verified = !unverified_citations.includes(issue.provision_id);
-          return (
-            <li key={i} className="py-4 text-sm first:pt-1">
-              <p>{issue.issue}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                {source ? (
-                  <a
-                    href={source.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-medium text-brand underline underline-offset-2"
-                  >
-                    {source.citation}
-                  </a>
-                ) : (
-                  <span className="font-medium">{issue.provision_id}</span>
-                )}
-                {verified ? (
-                  <span className="rounded bg-ok-tint px-1.5 py-0.5 text-[11px] font-medium text-ok">
-                    verified against statute text
-                  </span>
-                ) : (
-                  <UnverifiedBadge />
-                )}
-              </div>
-              <blockquote className="mt-2 border-l-2 border-line pl-3 font-serif text-[15px] leading-relaxed text-ink-soft">
-                {verified ? <mark className="text-ink">{issue.quote}</mark> : issue.quote}
-              </blockquote>
-            </li>
-          );
-        })}
-      </ul>
-      <details className="mt-4 rounded-md bg-canvas px-4 py-3 text-sm">
-        <summary className="cursor-pointer text-ink-soft">
-          Provisions considered ({assessment.sources.length})
-        </summary>
-        <ul className="mt-3 space-y-1.5">
-          {assessment.sources.map((s) => (
-            <li key={s.id}>
-              <a href={s.url} target="_blank" rel="noreferrer" className="underline underline-offset-2">
-                {s.citation}
-              </a>{" "}
-              <span className="text-ink-soft">
-                {s.title}, {s.via === "rule" ? "applied by the limitation check" : `search score ${s.score}`}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-3 text-xs text-ink-faint">Source: legislation.gov.uk, Open Government Licence v3.0.</p>
-      </details>
-    </Card>
   );
 }

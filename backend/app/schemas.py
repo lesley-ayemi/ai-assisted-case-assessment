@@ -117,6 +117,16 @@ class ProvisionRef(BaseModel):
     score: float | None = None
 
 
+class ProvisionOut(BaseModel):
+    id: str
+    act: str
+    section: str
+    citation: str
+    title: str
+    url: str
+    text: str
+
+
 class ProvisionHit(BaseModel):
     id: str
     citation: str
